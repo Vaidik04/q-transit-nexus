@@ -1,0 +1,45 @@
+{
+  "source": "AT-DQPSO Ablation Engine",
+  "configurations": [
+    {
+      "configuration": "Standard QPSO",
+      "travel_time_sec": 127.87,
+      "network_congestion": 0.0,
+      "objective": 46.1856,
+      "violations": 0,
+      "runtime_sec": 1.1765
+    },
+    {
+      "configuration": "QPSO + adaptive mechanism",
+      "travel_time_sec": 128.45,
+      "network_congestion": 0.0,
+      "objective": 46.3584,
+      "violations": 0,
+      "runtime_sec": 1.0337
+    },
+    {
+      "configuration": "QPSO + traffic awareness",
+      "travel_time_sec": 127.68,
+      "network_congestion": 0.0,
+      "objective": 46.128,
+      "violations": 0,
+      "runtime_sec": 0.966
+    },
+    {
+      "configuration": "QPSO + prediction",
+      "travel_time_sec": 127.87,
+      "network_congestion": 0.0,
+      "objective": 46.1856,
+      "violations": 0,
+      "runtime_sec": 0.9341
+    },
+    {
+      "configuration": "Full Adaptive QPSO + prediction",
+      "travel_time_sec": 129.22,
+      "network_congestion": 0.0,
+      "objective": 46.5888,
+      "violations": 0,
+      "runtime_sec": 1.1292
+    }
+  ]
+}

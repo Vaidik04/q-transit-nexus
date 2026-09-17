@@ -1,0 +1,6 @@
+Configuration,TravelTime_sec,NetworkCongestion,Objective,Violations,Runtime_sec
+Standard QPSO,127.87,0.0,46.1856,0,1.1765
+QPSO + adaptive mechanism,128.45,0.0,46.3584,0,1.0337
+QPSO + traffic awareness,127.68,0.0,46.128,0,0.966
+QPSO + prediction,127.87,0.0,46.1856,0,0.9341
+Full Adaptive QPSO + prediction,129.22,0.0,46.5888,0,1.1292

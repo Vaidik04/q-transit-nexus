@@ -1,0 +1,89 @@
+{
+  "source": "AT-DQPSO Benchmark Engine",
+  "results": [
+    {
+      "algorithm": "Dijkstra",
+      "travel_time_sec": 1353.09,
+      "distance_m": 1616.0,
+      "congestion_score": 0.2004,
+      "passenger_delay_sec": 106200.0,
+      "co2_emissions_kg": 4.56,
+      "runtime_sec": 0.0755,
+      "violations": 22,
+      "routes_changed": 0,
+      "best_fitness": 5234.1193
+    },
+    {
+      "algorithm": "A*",
+      "travel_time_sec": 127.3,
+      "distance_m": 1776.0,
+      "congestion_score": 0.0,
+      "passenger_delay_sec": 0.0,
+      "co2_emissions_kg": 5.16,
+      "runtime_sec": 0.0837,
+      "violations": 0,
+      "routes_changed": 0,
+      "best_fitness": 46.0128
+    },
+    {
+      "algorithm": "GA",
+      "travel_time_sec": 127.87,
+      "distance_m": 1776.0,
+      "congestion_score": 0.0,
+      "passenger_delay_sec": 0.0,
+      "co2_emissions_kg": 5.16,
+      "runtime_sec": 1.4231,
+      "violations": 0,
+      "routes_changed": 0,
+      "best_fitness": 46.1856
+    },
+    {
+      "algorithm": "ACO",
+      "travel_time_sec": 127.3,
+      "distance_m": 1776.0,
+      "congestion_score": 0.0,
+      "passenger_delay_sec": 0.0,
+      "co2_emissions_kg": 5.16,
+      "runtime_sec": 1.3941,
+      "violations": 0,
+      "routes_changed": 0,
+      "best_fitness": 46.0128
+    },
+    {
+      "algorithm": "PSO",
+      "travel_time_sec": 127.49,
+      "distance_m": 1776.0,
+      "congestion_score": 0.0,
+      "passenger_delay_sec": 0.0,
+      "co2_emissions_kg": 5.16,
+      "runtime_sec": 1.0999,
+      "violations": 0,
+      "routes_changed": 0,
+      "best_fitness": 46.0704
+    },
+    {
+      "algorithm": "Standard QPSO",
+      "travel_time_sec": 127.87,
+      "distance_m": 1776.0,
+      "congestion_score": 0.0,
+      "passenger_delay_sec": 0.0,
+      "co2_emissions_kg": 5.16,
+      "runtime_sec": 1.1389,
+      "violations": 0,
+      "routes_changed": 0,
+      "best_fitness": 46.1856
+    },
+    {
+      "algorithm": "AT-DQPSO",
+      "travel_time_sec": 129.22,
+      "distance_m": 1776.0,
+      "congestion_score": 0.0,
+      "passenger_delay_sec": 0.0,
+      "co2_emissions_kg": 5.16,
+      "runtime_sec": 1.0129,
+      "violations": 0,
+      "routes_changed": 0,
+      "best_fitness": 46.5888
+    }
+  ]
+}
