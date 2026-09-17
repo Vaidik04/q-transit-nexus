@@ -1,11 +1,12 @@
 """
 benchmarks.py — Multi-algorithm comparative benchmarking and telemetry export.
 
-Executes side-by-side evaluations across:
+Executes side-by-side evaluations across all 7 algorithms:
 - Dijkstra
 - A*
 - GA (Genetic Algorithm)
 - ACO (Ant Colony Optimization)
+- Classical PSO
 - Standard QPSO
 - AT-DQPSO (Ours)
 
@@ -31,6 +32,7 @@ from optimization.baselines import (
     AStarBaseline,
     DijkstraBaseline,
     GeneticAlgorithmBaseline,
+    UnmitigatedBaseline,
 )
 from optimization.config import OptimizationConfig, OptimizationMode
 from optimization.graph_interface import TransportationGraph
@@ -60,13 +62,49 @@ def generate_benchmark_scenario(
     # West-to-East corridor origins and destinations
     west_nodes = [n for n in nodes if "J_0" in n]
     east_nodes = [n for n in nodes if "J_3" in n]
-    all_non_incident = [n for n in nodes if n not in ("J_11", "J_21")]
+    # Ensure all edges have default predictions matching travel time
+    for eid, edge in graph.edges_by_id.items():
+        if edge.predicted_t5_sec is None:
+            edge.predicted_t5_sec = edge.travel_time_sec
+        if edge.predicted_t10_sec is None:
+            edge.predicted_t10_sec = edge.travel_time_sec
+        if edge.predicted_t15_sec is None:
+            edge.predicted_t15_sec = edge.travel_time_sec
 
     # If accident scenario, simulate accident bottleneck on central edge E_11_21 (or E14)
+    # and populate future horizon predictions (T+5, T+10, T+15) reflecting queue spillback
     if "accident" in scenario_name.lower():
         graph.update_edge_state("E_11_21", speed_kmh=5.0, flow_vph=1400.0, incident_severity=0.95)
+        e_acc = graph.get_edge("E_11_21")
+        if e_acc:
+            e_acc.predicted_t5_sec = 1800.0
+            e_acc.predicted_t10_sec = 2100.0
+            e_acc.predicted_t15_sec = 2400.0
+            e_acc.congestion_score = 0.95
+
         if "E14" in graph.edges_by_id:
             graph.update_edge_state("E14", speed_kmh=5.0, flow_vph=1400.0, incident_severity=0.95)
+            e14 = graph.edges_by_id["E14"]
+            e14.predicted_t5_sec = 1800.0
+            e14.predicted_t10_sec = 2100.0
+            e14.predicted_t15_sec = 2400.0
+            e14.congestion_score = 0.95
+
+        # Upstream queue spillback edge (E_01_11): T=0 still moving; T+5 spillback increases delay
+        e_upstream = graph.get_edge("E_01_11")
+        if e_upstream:
+            e_upstream.predicted_t5_sec = 120.0
+            e_upstream.predicted_t10_sec = 240.0
+            e_upstream.predicted_t15_sec = 360.0
+            e_upstream.congestion_score = 0.70
+
+        # Alternate detour/bypass corridors absorbing secondary traffic
+        for b_eid in ["E_01_02", "E_02_12", "E_12_22", "E_22_32", "E_01_00", "E_00_10", "E_10_20", "E_20_30"]:
+            b_edge = graph.get_edge(b_eid)
+            if b_edge:
+                b_edge.predicted_t5_sec = b_edge.travel_time_sec * 1.25
+                b_edge.predicted_t10_sec = b_edge.travel_time_sec * 1.40
+                b_edge.predicted_t15_sec = b_edge.travel_time_sec * 1.50
 
     for i in range(vehicle_count):
         # 1. Emergency responder (Vehicle 0)
@@ -132,10 +170,16 @@ class BenchmarkEngine:
         vehicles: Sequence[VehicleRoutingRequest],
         future_horizon_min: int = 5,
         max_iter: Optional[int] = None,
+        include_unmitigated: bool = True,
     ) -> Dict[str, OptimizationResult]:
-        """Runs Dijkstra, A*, GA, ACO, Standard QPSO, and AT-DQPSO on the same fleet."""
+        """Runs Dijkstra, A*, GA, ACO, Classical PSO, Standard QPSO, and AT-DQPSO (all 7 algorithms) on the same fleet."""
         results: Dict[str, OptimizationResult] = {}
         v_list = list(vehicles)
+
+        if include_unmitigated:
+            logger.info("Executing Unmitigated (No Reroute) Reference Baseline...")
+            unmit = UnmitigatedBaseline(self.graph, self.config)
+            results["Unmitigated"] = unmit.optimize(v_list, future_horizon_min=future_horizon_min)
 
         logger.info("Executing Dijkstra Baseline...")
         dijkstra = DijkstraBaseline(self.graph, self.config)
@@ -187,51 +231,85 @@ class BenchmarkEngine:
 
         lines.append(sep)
 
-        # 1. Comparison against Unmitigated Bottleneck (Dijkstra)
-        if "AT-DQPSO" in results and "Dijkstra" in results:
+        target_name = "AT-DQPSO" if "AT-DQPSO" in results else None
+        if target_name is None:
+            candidates = [k for k in results if k not in ("Dijkstra", "Unmitigated")]
+            if candidates:
+                target_name = candidates[-1]
+
+        # 1. Comparison against Unmitigated Bottleneck (if present)
+        if target_name and "Unmitigated" in results:
+            u_res = results["Unmitigated"]
+            t_res = results[target_name]
+            u_time = u_res.fitness_breakdown.travel_time_sec
+            t_time = t_res.fitness_breakdown.travel_time_sec
+            time_diff = u_time - t_time
+            time_pct = (abs(time_diff) / max(u_time, 1e-6)) * 100.0
+            time_sign = "-" if time_diff >= 0 else "+"
+
+            u_co2 = u_res.fitness_breakdown.co2_emissions_kg
+            t_co2 = t_res.fitness_breakdown.co2_emissions_kg
+            co2_diff = u_co2 - t_co2
+            co2_pct = (abs(co2_diff) / max(u_co2, 1e-6)) * 100.0
+            co2_note = f"-{co2_pct:.1f}%" if co2_diff >= 0 else f"+{co2_pct:.1f}% (detour distance)"
+
+            u_viol = u_res.fitness_breakdown.constraint_violations
+            t_viol = t_res.fitness_breakdown.constraint_violations
+
+            lines.append(f"[UNMITIGATED BOTTLENECK vs {target_name} COMPARISON]")
+            lines.append(
+                f"  * Travel Time: {time_sign}{time_pct:.1f}% (Unmitigated: {u_time:.1f}s -> {target_name}: {t_time:.1f}s) | "
+                f"CO2: {co2_note} | Violations: {u_viol} -> {t_viol}"
+            )
+
+        # 2. Comparison against Static Shortest Path Baseline (Dijkstra)
+        if target_name and "Dijkstra" in results:
             d_res = results["Dijkstra"]
-            at_res = results["AT-DQPSO"]
+            t_res = results[target_name]
             d_time = d_res.fitness_breakdown.travel_time_sec
-            at_time = at_res.fitness_breakdown.travel_time_sec
-            time_diff = d_time - at_time
+            t_time = t_res.fitness_breakdown.travel_time_sec
+            time_diff = d_time - t_time
             time_pct = (abs(time_diff) / max(d_time, 1e-6)) * 100.0
             time_sign = "-" if time_diff >= 0 else "+"
 
             d_co2 = d_res.fitness_breakdown.co2_emissions_kg
-            at_co2 = at_res.fitness_breakdown.co2_emissions_kg
-            co2_diff = d_co2 - at_co2
+            t_co2 = t_res.fitness_breakdown.co2_emissions_kg
+            co2_diff = d_co2 - t_co2
             co2_pct = (abs(co2_diff) / max(d_co2, 1e-6)) * 100.0
             co2_note = f"-{co2_pct:.1f}%" if co2_diff >= 0 else f"+{co2_pct:.1f}% (detour distance)"
 
-            lines.append("[UNMITIGATED BOTTLENECK BASELINE (Dijkstra) COMPARISON]")
+            d_viol = d_res.fitness_breakdown.constraint_violations
+            t_viol = t_res.fitness_breakdown.constraint_violations
+
+            lines.append(f"[STATIC DIJKSTRA BASELINE vs {target_name} COMPARISON]")
             lines.append(
-                f"  * Travel Time: {time_sign}{time_pct:.1f}% ({d_time:.1f}s -> {at_time:.1f}s) | "
-                f"CO2: {co2_note} | Violations: {d_res.fitness_breakdown.constraint_violations} -> {at_res.fitness_breakdown.constraint_violations}"
+                f"  * Travel Time: {time_sign}{time_pct:.1f}% (Dijkstra: {d_time:.1f}s -> {target_name}: {t_time:.1f}s) | "
+                f"CO2: {co2_note} | Violations: {d_viol} -> {t_viol}"
             )
 
-        # 2. Comparison against other optimization / metaheuristic baselines
+        # 3. Comparison against other optimization / metaheuristic baselines
         other_meta = {
             k: v for k, v in results.items()
-            if k not in ("AT-DQPSO", "Dijkstra")
+            if k not in (target_name, "Dijkstra", "Unmitigated")
         }
-        if "AT-DQPSO" in results and other_meta:
+        if target_name and other_meta:
             best_meta_name = min(other_meta.keys(), key=lambda k: other_meta[k].best_fitness)
             best_meta_res = other_meta[best_meta_name]
-            at_res = results["AT-DQPSO"]
+            t_res = results[target_name]
 
-            fit_diff = best_meta_res.best_fitness - at_res.best_fitness
-            lines.append("[BEST HEURISTIC / METAHEURISTIC BASELINE COMPARISON]")
+            fit_diff = best_meta_res.best_fitness - t_res.best_fitness
+            lines.append(f"[BEST HEURISTIC / METAHEURISTIC BASELINE vs {target_name} COMPARISON]")
             if fit_diff > 0:
                 lines.append(
-                    f"  * AT-DQPSO outperforms {best_meta_name} (Fitness: {at_res.best_fitness:.2f} vs {best_meta_res.best_fitness:.2f})"
+                    f"  * {target_name} outperforms {best_meta_name} (Fitness: {t_res.best_fitness:.2f} vs {best_meta_res.best_fitness:.2f})"
                 )
             elif abs(fit_diff) < 1.0:
                 lines.append(
-                    f"  * AT-DQPSO is competitive with {best_meta_name} (Fitness: {at_res.best_fitness:.2f} vs {best_meta_res.best_fitness:.2f})"
+                    f"  * {target_name} is competitive with {best_meta_name} (Fitness: {t_res.best_fitness:.2f} vs {best_meta_res.best_fitness:.2f})"
                 )
             else:
                 lines.append(
-                    f"  * AT-DQPSO achieves comparable routing with {best_meta_name} (Fitness: {at_res.best_fitness:.2f} vs {best_meta_res.best_fitness:.2f})"
+                    f"  * {target_name} achieves comparable routing with {best_meta_name} (Fitness: {t_res.best_fitness:.2f} vs {best_meta_res.best_fitness:.2f})"
                 )
 
         lines.append(sep)

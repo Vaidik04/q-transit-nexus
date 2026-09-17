@@ -69,7 +69,7 @@ def run_experiment(
         print("=" * 80)
         return
     elif algo_upper in ("ALL", "SUITE", "BENCHMARK"):
-        print("[INFO] Running comparative suite across all 6 algorithms...")
+        print("[INFO] Running comparative suite across all 7 algorithms...")
         results = engine.run_all(vehicles)
     elif algo_upper in ("AT-DQPSO", "AT_DQPSO", "ADAPTIVE_QPSO"):
         opt = AdaptiveTrafficDQPSO(graph, config)

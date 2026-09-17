@@ -94,6 +94,7 @@ def test_benchmark_engine_run_all():
     engine = BenchmarkEngine(tg, cfg)
 
     results = engine.run_all(vehicles, max_iter=3)
+    assert "Unmitigated" in results
     assert "PSO" in results
     assert "Standard QPSO" in results
     assert "AT-DQPSO" in results
@@ -103,8 +104,23 @@ def test_benchmark_engine_run_all():
     assert "ACO" in results
 
     table_str = engine.format_table(results)
-    assert "[UNMITIGATED BOTTLENECK BASELINE (Dijkstra) COMPARISON]" in table_str
-    assert "[BEST HEURISTIC / METAHEURISTIC BASELINE COMPARISON]" in table_str
+    assert "[UNMITIGATED BOTTLENECK vs AT-DQPSO COMPARISON]" in table_str
+    assert "[STATIC DIJKSTRA BASELINE vs AT-DQPSO COMPARISON]" in table_str
+    assert "[BEST HEURISTIC / METAHEURISTIC BASELINE vs AT-DQPSO COMPARISON]" in table_str
+
+
+def test_unmitigated_baseline():
+    from optimization.baselines import UnmitigatedBaseline
+
+    tg = TransportationGraph.create_prototype_network()
+    vehicles = generate_benchmark_scenario(tg, scenario_name="accident_corridor", vehicle_count=4, seed=42)
+    cfg = OptimizationConfig()
+    unmit = UnmitigatedBaseline(tg, cfg)
+    res = unmit.optimize(vehicles)
+    assert res.algorithm_name == "Unmitigated (No Reroute)"
+    assert res.best_fitness > 0.0
+    for r in res.best_routes:
+        assert not r.is_rerouted
 
 
 def test_ablation_engine(tmp_path):

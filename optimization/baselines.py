@@ -2,10 +2,11 @@
 baselines.py — Comparative baseline routing and optimization algorithms.
 
 Implements:
-1. DijkstraBaseline: Static greedy shortest path on free-flow weights
+1. DijkstraBaseline: Static greedy shortest path on free-flow weights over candidate routes
 2. AStarBaseline: A* heuristic shortest path on current graph weights
 3. GeneticAlgorithmBaseline: Multi-vehicle discrete GA with crossover & mutation
 4. AntColonyBaseline: Ant Colony Optimization with pheromone trails
+5. UnmitigatedBaseline: Unmitigated pre-incident default routes without rerouting
 """
 
 from __future__ import annotations
@@ -28,7 +29,9 @@ logger = logging.getLogger(__name__)
 
 
 class DijkstraBaseline:
-    """Greedy static shortest path baseline using Dijkstra's algorithm on freeflow weights."""
+    """Greedy static shortest path baseline using Dijkstra's algorithm on freeflow weights.
+    Evaluates candidate routes across the shared candidate-route space (k_paths).
+    """
 
     def __init__(self, graph: TransportationGraph, config: Optional[OptimizationConfig] = None) -> None:
         self.graph = graph
@@ -41,18 +44,73 @@ class DijkstraBaseline:
         future_horizon_min: int = 0,
     ) -> OptimizationResult:
         start_time = time.perf_counter()
-        encoder = RouteEncoder(self.graph, vehicles, k_paths=1)
+        encoder = RouteEncoder(self.graph, vehicles, k_paths=self.config.k_paths)
         decoder = RouteDecoder(encoder, self.graph)
 
-        # Candidate path index 0 is the static shortest path for all vehicles
-        discrete_indices = [0] * encoder.dimension
-        particle = encoder.encode_discrete_indices(discrete_indices)
+        # For each vehicle, select the candidate path with the lowest static freeflow travel time
+        chosen_indices = []
+        for v in vehicles:
+            candidates = encoder.candidate_paths[v.vehicle_id]
+            best_p_idx = 0
+            best_cost = float("inf")
+            for p_idx, p in enumerate(candidates):
+                cost = sum(
+                    self.graph.get_edge(eid).length_m / max(
+                        self.graph.get_edge(eid).freeflow_speed_kmh * (1000.0 / 3600.0), 1.0
+                    )
+                    for eid in p if self.graph.get_edge(eid)
+                )
+                if cost < best_cost:
+                    best_cost = cost
+                    best_p_idx = p_idx
+            chosen_indices.append(best_p_idx)
+
+        particle = encoder.encode_discrete_indices(chosen_indices)
         routes = decoder.decode_particle(particle, future_horizon_min=future_horizon_min)
         breakdown = self.fitness_evaluator.evaluate(routes, encoder, future_horizon_min)
         runtime = time.perf_counter() - start_time
 
         return OptimizationResult(
             algorithm_name="Dijkstra",
+            best_fitness=breakdown.total_fitness,
+            best_particle=particle,
+            best_routes=routes,
+            fitness_breakdown=breakdown,
+            runtime_sec=runtime,
+            iterations_run=1,
+            convergence_history=[breakdown.total_fitness],
+        )
+
+
+class UnmitigatedBaseline:
+    """Unmitigated incident baseline: vehicles stay on their default / initial candidate path (no rerouting)."""
+
+    def __init__(self, graph: TransportationGraph, config: Optional[OptimizationConfig] = None) -> None:
+        self.graph = graph
+        self.config = config or OptimizationConfig()
+        self.fitness_evaluator = MultiObjectiveFitness(graph, self.config)
+
+    def optimize(
+        self,
+        vehicles: List[VehicleRoutingRequest],
+        future_horizon_min: int = 0,
+    ) -> OptimizationResult:
+        start_time = time.perf_counter()
+        encoder = RouteEncoder(self.graph, vehicles, k_paths=self.config.k_paths)
+        decoder = RouteDecoder(encoder, self.graph)
+
+        # Default path index 0 for all vehicles (unmitigated default routes)
+        chosen_indices = [0] * encoder.dimension
+        particle = encoder.encode_discrete_indices(chosen_indices)
+        routes = decoder.decode_particle(particle, future_horizon_min=future_horizon_min)
+        for r in routes:
+            r.is_rerouted = False
+
+        breakdown = self.fitness_evaluator.evaluate(routes, encoder, future_horizon_min)
+        runtime = time.perf_counter() - start_time
+
+        return OptimizationResult(
+            algorithm_name="Unmitigated (No Reroute)",
             best_fitness=breakdown.total_fitness,
             best_particle=particle,
             best_routes=routes,

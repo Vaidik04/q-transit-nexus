@@ -2,13 +2,14 @@
 test_fitness_constraints.py — Unit tests for ConstraintManager and MultiObjectiveFitness.
 """
 
+import numpy as np
 import pytest
 
 from optimization.config import OptimizationConfig, OptimizationMode
 from optimization.constraints import ConstraintManager
 from optimization.fitness import MultiObjectiveFitness
 from optimization.graph_interface import TransportationGraph
-from optimization.route_decoder import DecodedVehicleRoute
+from optimization.route_decoder import DecodedVehicleRoute, RouteDecoder
 from optimization.route_encoder import RouteEncoder, VehicleRoutingRequest
 
 
@@ -121,3 +122,74 @@ def test_extended_constraints_all():
     assert "VEHICLE_AVAILABILITY" in v_types
     assert "DEPOT_REQUIREMENT" in v_types
     assert res.total_penalty > 0.0
+
+
+def test_prediction_aware_fitness_sensitivity():
+    """Verify that changing predicted travel time directly alters prediction-aware fitness."""
+    tg = TransportationGraph.create_prototype_network()
+    edge = tg.get_edge("E_01_11")
+    assert edge is not None
+
+    # Base current travel time at 50 km/h: 400m / (50 * 1000 / 3600) = 28.8s
+    # Set predicted T+5 travel time higher (e.g. 150.0s)
+    edge.predicted_t5_sec = 150.0
+
+    v = VehicleRoutingRequest(vehicle_id="V_PRED", origin="J_01", destination="J_11")
+    encoder = RouteEncoder(tg, [v], k_paths=1)
+    decoder = RouteDecoder(encoder, tg)
+
+    # Decode at horizon 0 (current conditions)
+    routes_h0 = decoder.decode_particle(np.array([0.0]), future_horizon_min=0)
+    cfg = OptimizationConfig()
+    mf = MultiObjectiveFitness(tg, cfg)
+    fit_h0 = mf.evaluate(routes_h0, encoder, future_horizon_min=0)
+
+    # Decode at horizon 5 (ML predicted conditions)
+    routes_h5 = decoder.decode_particle(np.array([0.0]), future_horizon_min=5)
+    fit_h5 = mf.evaluate(routes_h5, encoder, future_horizon_min=5)
+
+    # Predicted cost at T+5 must be strictly greater than at T=0
+    assert fit_h5.travel_time_sec > fit_h0.travel_time_sec
+    assert fit_h5.total_fitness > fit_h0.total_fitness
+
+    # Increasing predicted T+5 travel time further must increase prediction-aware fitness monotonically
+    edge.predicted_t5_sec = 300.0
+    fit_h5_higher = mf.evaluate(routes_h5, encoder, future_horizon_min=5)
+    assert fit_h5_higher.travel_time_sec > fit_h5.travel_time_sec
+    assert fit_h5_higher.total_fitness > fit_h5.total_fitness
+
+
+def test_bpr_congestion_penalty():
+    """Verify that BPR volume-to-capacity latency function penalizes vehicle crowding on a single edge."""
+    tg = TransportationGraph.create_prototype_network()
+    cfg = OptimizationConfig(enable_bpr_latency=True, bpr_alpha=0.15, bpr_beta=2.0)
+    mf = MultiObjectiveFitness(tg, cfg)
+
+    # Scenario A: 10 vehicles all crowded onto the SAME edge E_00_10
+    vehicles_crowded = [
+        VehicleRoutingRequest(vehicle_id=f"V_CROWD_{i}", origin="J_00", destination="J_10")
+        for i in range(10)
+    ]
+    encoder_crowded = RouteEncoder(tg, vehicles_crowded, k_paths=1)
+    routes_crowded = [
+        DecodedVehicleRoute(v.vehicle_id, "passenger", "NORMAL", ["E_00_10"], 400.0, 30.0)
+        for v in vehicles_crowded
+    ]
+    fit_crowded = mf.evaluate(routes_crowded, encoder_crowded, future_horizon_min=0)
+
+    # Scenario B: 10 vehicles dispersed across 5 different edges (2 vehicles per edge)
+    edges_pool = ["E_00_10", "E_01_11", "E_02_12", "E_10_20", "E_11_21"]
+    vehicles_dispersed = [
+        VehicleRoutingRequest(vehicle_id=f"V_DISP_{i}", origin="J_00", destination="J_10")
+        for i in range(10)
+    ]
+    encoder_dispersed = RouteEncoder(tg, vehicles_dispersed, k_paths=1)
+    routes_dispersed = [
+        DecodedVehicleRoute(v.vehicle_id, "passenger", "NORMAL", [edges_pool[i % len(edges_pool)]], 400.0, 30.0)
+        for i, v in enumerate(vehicles_dispersed)
+    ]
+    fit_dispersed = mf.evaluate(routes_dispersed, encoder_dispersed, future_horizon_min=0)
+
+    # Crowded assignment must suffer higher travel time and higher fitness penalty due to BPR non-linear latency
+    assert fit_crowded.travel_time_sec > fit_dispersed.travel_time_sec
+    assert fit_crowded.total_fitness > fit_dispersed.total_fitness

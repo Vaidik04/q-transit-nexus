@@ -3,43 +3,43 @@
   "configurations": [
     {
       "configuration": "Standard QPSO",
-      "travel_time_sec": 127.87,
-      "network_congestion": 0.0,
-      "objective": 46.1856,
+      "travel_time_sec": 134.48,
+      "network_congestion": 0.0998,
+      "objective": 51.7146,
       "violations": 0,
-      "runtime_sec": 1.1765
+      "runtime_sec": 0.7283
     },
     {
       "configuration": "QPSO + adaptive mechanism",
-      "travel_time_sec": 128.45,
-      "network_congestion": 0.0,
-      "objective": 46.3584,
+      "travel_time_sec": 134.61,
+      "network_congestion": 0.1007,
+      "objective": 51.5518,
       "violations": 0,
-      "runtime_sec": 1.0337
+      "runtime_sec": 0.554
     },
     {
       "configuration": "QPSO + traffic awareness",
-      "travel_time_sec": 127.68,
-      "network_congestion": 0.0,
-      "objective": 46.128,
+      "travel_time_sec": 134.48,
+      "network_congestion": 0.0997,
+      "objective": 51.6807,
       "violations": 0,
-      "runtime_sec": 0.966
+      "runtime_sec": 0.588
     },
     {
       "configuration": "QPSO + prediction",
-      "travel_time_sec": 127.87,
-      "network_congestion": 0.0,
-      "objective": 46.1856,
+      "travel_time_sec": 164.9,
+      "network_congestion": 0.0891,
+      "objective": 72.2951,
       "violations": 0,
-      "runtime_sec": 0.9341
+      "runtime_sec": 0.5027
     },
     {
       "configuration": "Full Adaptive QPSO + prediction",
-      "travel_time_sec": 129.22,
-      "network_congestion": 0.0,
-      "objective": 46.5888,
+      "travel_time_sec": 172.42,
+      "network_congestion": 0.0877,
+      "objective": 75.3471,
       "violations": 0,
-      "runtime_sec": 1.1292
+      "runtime_sec": 0.5763
     }
   ]
 }

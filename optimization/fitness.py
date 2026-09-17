@@ -86,6 +86,12 @@ class MultiObjectiveFitness:
         total_co2_kg = 0.0
         rerouted_count = 0
 
+        # Aggregate vehicle loads per edge across the fleet candidate assignment
+        edge_loads: Dict[str, int] = {}
+        for r in routes:
+            for edge_id in r.route:
+                edge_loads[edge_id] = edge_loads.get(edge_id, 0) + 1
+
         for r in routes:
             v_req = next((v for v in encoder.vehicles if v.vehicle_id == r.vehicle_id), None)
             passenger_load = v_req.passenger_load if v_req else 1
@@ -99,10 +105,25 @@ class MultiObjectiveFitness:
                 edge = self.graph.get_edge(edge_id)
                 if edge:
                     route_dist += edge.length_m
-                    # Use ML prediction horizon for downstream edge costs
-                    edge_time = edge.get_travel_time_for_horizon(future_horizon_min)
+                    # Use ML prediction horizon for base edge travel time
+                    base_edge_time = edge.get_travel_time_for_horizon(future_horizon_min)
+
+                    if self.config.enable_bpr_latency:
+                        v_load = edge_loads.get(edge_id, 1)
+                        window_min = max(self.config.bpr_capacity_window_sec / 60.0, 0.1)
+                        # Practical vehicle capacity for the dispatch window
+                        c_eff = max(2.0, (edge.capacity_vph / 60.0) * window_min)
+                        # Standard BPR latency: t = t0 * [1 + alpha * (V / C)^beta]
+                        bpr_factor = 1.0 + self.config.bpr_alpha * ((v_load / c_eff) ** self.config.bpr_beta)
+                        edge_time = base_edge_time * bpr_factor
+                        add_cong = min(0.6, (v_load / c_eff) * 0.15)
+                        edge_cong = min(1.0, edge.congestion_score + add_cong)
+                    else:
+                        edge_time = base_edge_time
+                        edge_cong = edge.congestion_score
+
                     route_time += edge_time
-                    route_cong += edge.congestion_score
+                    route_cong += edge_cong
 
             n_edges = max(len(r.route), 1)
             avg_cong = route_cong / n_edges

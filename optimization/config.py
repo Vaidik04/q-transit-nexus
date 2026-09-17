@@ -147,6 +147,11 @@ class OptimizationConfig:
     fuel_liters_per_100km: float = 6.5    # Fuel consumption rate L/100km
     ev_kwh_per_km: float = 0.18           # EV energy consumption kWh/km
     min_ev_soc: float = 15.0              # Minimum allowable battery SoC (%)
+    # Flow-dependent congestion parameters (BPR formula: t = t0 * [1 + alpha * (V/C)^beta])
+    enable_bpr_latency: bool = True
+    bpr_alpha: float = 0.15                # Standard Bureau of Public Roads coefficient
+    bpr_beta: float = 2.0                  # Congestion curve exponent
+    bpr_capacity_window_sec: float = 60.0  # Effective vehicle capacity time window in seconds
 
     def set_mode(self, mode: OptimizationMode | str) -> None:
         if isinstance(mode, str):
