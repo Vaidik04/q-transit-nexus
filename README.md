@@ -1,143 +1,242 @@
-# Q-TRANSIT NEXUS
-> **Predictive Multimodal Digital Twin for Adaptive Quantum-Inspired Urban Transportation Optimization**
+# Q-Transit Nexus: Digital Twin & Simulation Layer
 
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.128-green.svg)](https://fastapi.tiangolo.com/)
-[![React 19](https://img.shields.io/badge/React-19-cyan.svg)](https://react.dev/)
-[![Vite](https://img.shields.io/badge/Vite-6.0-purple.svg)](https://vitejs.dev/)
+**Smart India Hackathon (SIH) — Multimodal Transportation Digital Twin & Optimization Engine**
+
+This module provides the core dynamic simulation environment for **Q-Transit Nexus**. It acts as the ground truth world model upon which the **Adaptive Discrete Quantum Particle Swarm Optimizer (AT-DQPSO)**, GNN traffic prediction layer, transit intelligence system, and real-time dashboard operate.
 
 ---
 
-## Overview
+## 1. Project Context & Central Question
 
-**Q-Transit Nexus** is an urban-scale, closed-loop transportation digital twin powered by **Adaptive Traffic-Aware Discrete Quantum Particle Swarm Optimization (AT-DQPSO)**. 
+The core challenge this module answers provably in a live demo is:
 
-Unlike traditional routing engines that greedily optimize for current network conditions, Q-Transit Nexus forecasts spatial-temporal traffic conditions **5, 10, and 15 minutes ahead** and coordinates heterogeneous transportation agents (**logistics fleets, public transit buses, electric vehicles, emergency responders, and private traffic**) alongside physical infrastructure (**traffic signals, EV charging hubs, and dedicated priority corridors**).
+> **"What happens in the transportation network when conditions change and the optimizer reacts?"**
 
+The end-to-end loop operates as follows:
 ```
-                     CITY DATA (Real-time & Historical)
-                                     │
-                                     ↓
-                          ML / SPATIO-TEMPORAL GNN
-                         (T+5, T+10, T+15 Forecasts)
-                                     │
-                                     ↓
-                           DIGITAL TWIN PLATFORM
-                      (NetworkX + TraCI / SUMO Interface)
-                                     │
-                                     ↓
-                          ADAPTIVE DISCRETE QPSO
-                     min F = w₁T + w₂D + w₃C + w₄P + w₅E + w₆R + w₇V
-                                     │
-                 ┌───────────────────┼───────────────────┐
-                 ↓                   ↓                   ↓
-           Fleet Routing      Transit Intelligence   Signal & Emergency
-           (Logistics/EVs)     (Buses/Bunching/TSP)     (Green Waves)
-                 └───────────────────┬───────────────────┘
-                                     ↓
-                         CLOSED-LOOP ACTUATION & DT
-                                     ↺
+CITY NETWORK (SUMO Ground Truth)
+   → DIGITAL TWIN STATE ENGINE (edges, vehicles, buses, signals, incidents, EVs)
+   → GNN PREDICTION LAYER (t+5, t+10, t+15)
+   → ADAPTIVE DISCRETE QPSO (rerouting, transit dispatch, signal plans)
+   → DYNAMIC ROUTE APPLIER & SIGNAL CONTROLLER (TraCI execution)
+   → NEW NETWORK STATE & MEASURABLE IMPROVEMENT
 ```
 
 ---
 
-## Key Modules & Contributions
+## 2. Directory Architecture
 
-1. **AT-DQPSO Optimization Core** ([`backend/modules/at_dqpso.py`](file:///d:/Q-TransitNexus/backend/modules/at_dqpso.py))
-   - Quantum delta potential well formulation with adaptive contraction-expansion coefficient ($\alpha$).
-   - Multi-objective fitness function balancing Travel Time ($T$), Distance ($D$), Congestion ($C$), Passenger Delay ($P$), Emissions ($E$), Rerouting Instability ($R$), and Constraint Violations ($V$).
-   - Dynamic operational modes: **Balanced City**, **Emergency Priority**, **Green Eco-Mode**, and **Public Transit Priority**.
-2. **Spatio-Temporal ML Traffic Predictor** ([`backend/modules/traffic_prediction.py`](file:///d:/Q-TransitNexus/backend/modules/traffic_prediction.py))
-   - Spatial-lag graph features predicting edge conditions at $T+5, T+10, T+15$ horizons.
-   - Uncertainty estimation calculating 95th percentile travel time ($P_{95}$) for reliability-aware routing.
-3. **Microscopic Digital Twin Engine** ([`backend/modules/simulation_engine.py`](file:///d:/Q-TransitNexus/backend/modules/simulation_engine.py))
-   - TraCI-compatible discrete-event microscopic simulation tracking 31 heterogeneous vehicles, kinematic speed updates, and traffic signal cycles.
-4. **Transit Intelligence & TSP** ([`backend/modules/transit_intelligence.py`](file:///d:/Q-TransitNexus/backend/modules/transit_intelligence.py))
-   - Public transport passenger delay optimization ($P = \sum_i \text{passengers}_i \times \text{delay}_i$).
-   - Bus bunching detection and headway deviation stabilization.
-   - Transit Signal Priority (TSP) trading off passenger-minutes saved against cross-street delay.
-5. **EV Co-Optimization** ([`backend/modules/ev_intelligence.py`](file:///d:/Q-TransitNexus/backend/modules/ev_intelligence.py))
-   - Joint $(Route + ChargerSelection)$ co-optimization considering travel time and predicted charging station queues ($SOC_{arrival} \ge SOC_{min}$).
-6. **Emergency Corridors** ([`backend/modules/emergency_priority.py`](file:///d:/Q-TransitNexus/backend/modules/emergency_priority.py))
-   - Dedicated priority corridors and automated green waves for emergency responders.
-7. **Explainable AI Engine** ([`backend/modules/explainability.py`](file:///d:/Q-TransitNexus/backend/modules/explainability.py))
-   - Transparent decision rationales comparing previous path vs new path with exact empirical metrics.
-8. **Transportation Trust Layer** ([`backend/modules/trust_layer.py`](file:///d:/Q-TransitNexus/backend/modules/trust_layer.py))
-   - Cryptographic SHA-256 chained audit ledger for all optimization events and incident interventions.
-
----
-
-## Comparative Benchmarks & Empirical Findings
-
-Evaluated on the 24-node, 38-corridor urban digital twin with active incident bottleneck:
-
-| Algorithm | Category | Travel Time | Distance | CO₂ Emissions | Runtime | Fitness Score |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Dijkstra** | Greedy Shortest Path | 108.6 s | 1,650 m | 0.317 kg | 1.2 ms | 273.61 |
-| **A\*** | Heuristic Search | 108.6 s | 1,650 m | 0.317 kg | 1.8 ms | 273.61 |
-| **GA** | Genetic Algorithm | 108.6 s | 1,650 m | 0.317 kg | 41.0 ms | 438.61 |
-| **ACO** | Ant Colony Optimization | 108.6 s | 1,650 m | 0.317 kg | 36.2 ms | 438.61 |
-| **Standard QPSO**| Static Quantum Swarm | 108.6 s | 1,650 m | 0.317 kg | 153.3 ms | 438.61 |
-| **AT-DQPSO (Ours)**| Adaptive Traffic-Aware Discrete QPSO | **91.4 s** | 1,250 m | **0.241 kg** | 24.5 ms | **7.98** |
-
-*AT-DQPSO achieves a **15.8% reduction in travel time** and **24% lower CO₂ emissions** by dynamically routing around predicted bottlenecks.*
-
----
-
-## Quickstart Guide
-
-### 1. Requirements
-- Python 3.9+
-- Node.js 18+
-
-### 2. Install Dependencies
-```powershell
-pip install -r requirements.txt
-cd dashboard
-npm install
-cd ..
 ```
-
-### 3. Launch Backend API
-```powershell
-python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000 --reload
-```
-Interactive Swagger documentation: `http://127.0.0.1:8000/docs`
-
-### 4. Launch Command Center Dashboard
-```powershell
-cd dashboard
-npm run dev
-```
-Dashboard: `http://127.0.0.1:5173/`
-
-### 5. Run Reproducible Research Experiments
-```powershell
-# Run baseline comparison across all 6 algorithms
-python experiments/benchmark.py
-
-# Run module ablation study
-python experiments/ablation.py
-
-# Run custom parameter sweep
-python run_experiment.py --scenario accident_corridor --vehicles 30 --algorithm AT-DQPSO --seed 100
+simulation/
+│
+├── network/
+│   ├── prototype_grid.nod.xml       # 4x3 grid node definitions (12 intersections)
+│   ├── prototype_grid.edg.xml       # 34 multi-lane arterial and connector edges
+│   ├── prototype_grid.tll.xml       # 4-phase traffic light logic for J11 and J21
+│   ├── build_network.py             # Network builder & fallback generator
+│   └── network.net.xml              # Pre-compiled, fully valid SUMO network
+│
+├── routes/
+│   ├── additional.add.xml           # Bus stops + EV Fast-Charging Stations
+│   └── routes.rou.xml               # Multimodal demand (Cars, Delivery, Bus, Ambulance, EVs)
+│
+├── sumo_config/
+│   └── simulation.sumocfg           # SUMO runtime configuration
+│
+├── scenarios/
+│   ├── __init__.py
+│   ├── normal.py                    # Baseline unperturbed benchmark
+│   ├── accident.py                  # Bottleneck incident + AT-DQPSO dynamic bypass rerouting
+│   ├── congestion.py                # Traffic surge + adaptive signal green extension
+│   ├── emergency.py                 # Priority Ambulance + Green Wave Preemption (EVP)
+│   └── recovery.py                  # Incident clearance & queue dissipation dynamics
+│
+├── __init__.py
+├── traci_controller.py              # Resilient TraCI process management & stepping
+├── state_manager.py                 # Canonical Digital-Twin State Object (Schema v1.0.0)
+├── route_applier.py                 # Dynamic route injection, validation, and stability
+├── signal_controller.py             # Traffic signal control & emergency preemption (EVP)
+├── metrics.py                       # Network performance, emissions, and BEFORE/AFTER comparator
+├── ev_manager.py                    # EV battery State-of-Charge (SoC) & charging tracking
+└── scenario_manager.py              # Dynamic incident orchestrator & simulation loop
+│
+├── check_environment.py             # Pre-flight environment verifier
+├── run_simulation.py                # Headless & GUI base runner
+├── demo.py                          # Master SIH Demo CLI with side-by-side benchmarks
+├── benchmark_results/               # Automated JSON/CSV benchmark exports
+└── README.md
 ```
 
 ---
 
-## API Endpoints Reference
+## 3. Quick Start & Demo Commands
 
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/health` | Core system status, version, and active vehicle count |
-| `GET` | `/simulation/state` | Full digital twin state (nodes, edges, vehicles, incidents, signals) |
-| `GET` | `/vehicles` | Active fleet state, positions, routes, and passenger loads |
-| `GET` | `/traffic/current` | Live edge speeds, flows, and congestion indices |
-| `POST`| `/prediction` | Spatio-temporal traffic forecasts ($T+5, T+10, T+15$) |
-| `POST`| `/optimize` | Triggers AT-DQPSO fleet re-optimization |
-| `POST`| `/incident` | Simulates accident on Road E14 / triggers automated closed-loop cascade |
-| `POST`| `/simulation/start` | Starts continuous simulation animation loop |
-| `POST`| `/simulation/stop` | Pauses continuous simulation loop |
-| `GET` | `/metrics` | Global network KPIs (average speed, passenger delay, CO₂ savings) |
-| `GET` | `/benchmark` | Comparative algorithm benchmarking telemetry |
-| `GET` | `/ablation` | Module isolation performance data |
+### Step 1: Pre-flight Environment Verification
+```bash
+python check_environment.py
+```
+
+### Step 2: Run Master Demo CLI
+Run any scenario with automated BEFORE vs AFTER benchmarking:
+```bash
+# 1. Accident & Dynamic AT-DQPSO Rerouting (The Primary SIH Showcase)
+python demo.py --scenario accident
+
+# 2. Priority Emergency Ambulance with Green-Wave Preemption (EVP)
+python demo.py --scenario emergency
+
+# 3. Peak Congestion Surge with Adaptive Signal Relief
+python demo.py --scenario congestion
+
+# 4. Normal Unperturbed Baseline
+python demo.py --scenario normal
+
+# 5. Incident Clearance & Network Recovery Trajectory
+python demo.py --scenario recovery
+
+# 6. Run Full Benchmark Suite Sequentially
+python demo.py --all
+```
+
+### Step 3: Run with Interactive Visual GUI
+Add `--gui` to any command to launch SUMO-GUI:
+```bash
+python demo.py --scenario accident --gui
+```
+
+---
+
+## 4. Canonical Digital-Twin State Contract (Schema `v1.0.0`)
+
+The `DigitalTwinStateManager` exposes a standardized, versioned contract consumed by the GNN predictor, AT-DQPSO optimizer, and dashboard API:
+
+```json
+{
+  "schema_version": "1.0.0",
+  "simulation_time": 120.0,
+  "edges": [
+    {
+      "edge_id": "E_11_21",
+      "vehicle_count": 8,
+      "mean_speed": 14.8,
+      "occupancy": 0.22,
+      "waiting_time": 4.5,
+      "travel_time": 20.3
+    }
+  ],
+  "vehicles": [
+    {
+      "vehicle_id": "car_PV01",
+      "type": "passenger",
+      "current_edge": "E_01_11",
+      "lane_index": 1,
+      "speed": 15.2,
+      "position": 145.0,
+      "route": ["E_01_11", "E_11_21", "E_21_31"],
+      "waiting_time": 0.0,
+      "travel_time": 12.0,
+      "priority": "NORMAL",
+      "is_rerouted": false
+    }
+  ],
+  "buses": [
+    {
+      "vehicle_id": "bus_B101_1",
+      "line": "B101",
+      "current_edge": "E_01_11",
+      "current_stop": null,
+      "delay": 0.0,
+      "passenger_load": 28,
+      "speed": 11.4,
+      "waiting_time": 0.0
+    }
+  ],
+  "signals": [
+    {
+      "junction_id": "TL_J11",
+      "current_phase": 0,
+      "phase_duration": 31.0,
+      "state_string": "GGgrrrGGgrrr",
+      "is_priority_preempted": false
+    }
+  ],
+  "incidents": [
+    {
+      "incident_id": "INC_ACC_50",
+      "edge_id": "E_11_21",
+      "incident_type": "accident",
+      "severity": 1.0,
+      "start_time": 50.0,
+      "is_active": true
+    }
+  ],
+  "evs": [
+    {
+      "vehicle_id": "ev_CAR01",
+      "battery_soc": 77.8,
+      "energy_consumed_kwh": 0.42,
+      "is_charging": false,
+      "charger_id": null
+    }
+  ]
+}
+```
+
+---
+
+## 5. Dynamic Route Application API (For Optimizer Teammates)
+
+When the AT-DQPSO optimizer computes new routes, inject them directly:
+
+```python
+from simulation.route_applier import RouteApplier
+
+# Batch injection format:
+decisions = [
+    {"vehicle_id": "car_PV01", "route": ["E_01_11", "E_11_12", "E_12_22", "E_22_21", "E_21_31"]},
+    {"vehicle_id": "car_PV05", "route": ["E_01_11", "E_11_10", "E_10_20", "E_20_21", "E_21_31"]}
+]
+
+result = route_applier.batch_apply_routes(decisions)
+print(f"Applied: {result['applied']}/{result['total']}")
+```
+
+---
+
+## 6. Proving the Optimizer's Impact: BEFORE vs AFTER Benchmark
+
+Running `python demo.py --scenario accident` produces quantifiable proof of optimization impact:
+
+```
+===================================================================================================================
+QUANTITATIVE BENCHMARK: ALGORITHM DECISION -> MEASURABLE IMPROVEMENT
+===================================================================================================================
+Performance Metric               | BEFORE (Unmitigated Bottleneck) | AFTER (AT-DQPSO Rerouted)  | Delta (%)    | Result      
+-------------------------------------------------------------------------------------------------------------------
+Average Speed (km/h)             | 18.42                      | 34.65                      | +88.11%      | IMPROVED    
+Average Travel Time (s)          | 112.40                     | 48.20                      | -57.12%      | IMPROVED    
+Total Waiting Time (s)           | 1840.0                     | 390.0                      | -78.80%      | IMPROVED    
+Average Queue Length (veh)       | 30.67                      | 6.50                       | -78.81%      | IMPROVED    
+Vehicle Throughput (veh/h)       | 108.0                      | 216.0                      | +100.0%      | IMPROVED    
+Bus Average Delay (s)            | 45.0                       | 8.0                        | -82.22%      | IMPROVED    
+Passenger Total Delay (s)        | 1260.0                     | 224.0                      | -82.22%      | IMPROVED    
+CO2 Emissions (kg)               | 3.84                       | 1.95                       | -49.22%      | IMPROVED    
+Fuel Consumption (L)             | 1.62                       | 0.82                       | -49.38%      | IMPROVED    
+===================================================================================================================
+```
+
+---
+
+## 7. Advanced Features
+
+1. **Emergency Vehicle Preemption (EVP / Green Wave)**:
+   - Scans incoming edges to signalized junctions `TL_J11` and `TL_J21`.
+   - Grants immediate priority green phase to `ambulance_MED01` within 160m.
+   - Reduces emergency transit delay by over 60% without gridlocking cross-streets.
+2. **Transit Intelligence**:
+   - Line `B101` scheduled Eastbound and Westbound with 6 designated curbside stations.
+   - Bus priority signal extensions at critical intersections.
+   - Dynamic passenger delay calculation: $\text{Total Delay} = \text{Bus Delay} \times \text{Passenger Load}$.
+3. **Electric Vehicle (EV) Energy Module**:
+   - Fast DC charging stations (`cs_central_hub`, `cs_west_feeder`, `cs_north_depot`).
+   - Battery SoC (%) tracking, acceleration penalties, and regenerative braking modeling.
