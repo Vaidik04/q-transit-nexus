@@ -1,0 +1,6 @@
+algorithm,scenario,vehicles,runtime,travel_time,congestion,violations,seed,runtime_sec,avg_travel_time_sec,avg_distance_m,total_emissions_kg,avg_congestion
+Dijkstra,accident_corridor,20,0.0,121.87,0.2,0,100,0.0,121.87,1605.0,6.164,0.2
+A*,accident_corridor,20,0.0,124.26,0.2,0,100,0.0,124.26,1605.0,6.164,0.2
+PSO,accident_corridor,20,0.0952,122.39,0.2,0,100,0.0952,122.39,1600.5,6.146,0.2
+QPSO,accident_corridor,20,0.1538,122.39,0.2,0,100,0.1538,122.39,1600.5,6.146,0.2
+Adaptive QPSO,accident_corridor,20,0.371,130.55,0.2,0,100,0.371,130.55,1603.5,4.938,0.2
