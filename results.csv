@@ -1,0 +1,4 @@
+algorithm,scenario,vehicles,seed,runtime_sec,avg_travel_time_sec,avg_distance_m,total_emissions_kg,avg_congestion,violations
+AT-DQPSO,accident_corridor,15,42,0.291,138.3,1773.33,3.771,0.2,0
+AT-DQPSO,accident_corridor,25,0.473,136.62,0.2,0,42,0.473,136.62,1738.8,6.412,0.2
+AT-DQPSO,accident_corridor,25,0.465,136.62,0.2,0,42,0.465,136.62,1738.8,6.412,0.2
