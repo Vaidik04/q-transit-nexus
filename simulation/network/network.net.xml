@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Q-TRANSIT NEXUS - Pre-compiled Urban Grid Prototype Network
+  4x3 Intersections (J00 to J32)
+  Row 1: Central Arterial (3 lanes, 60 km/h)
+  Row 0 & 2: Secondary Avenues (2 lanes, 50 km/h)
+  Col 0-3: Cross Streets (2 lanes, 40 km/h)
+-->
+<net version="1.20" junctionCornerDetail="5" limitTurnSpeed="5.50" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/net_file.xsd">
+    <location netOffset="0.00,0.00" convBoundary="0.00,0.00,900.00,600.00" origBoundary="0.00,0.00,900.00,600.00" projParameter="!"/>
+
+    <!-- Traffic Light Logic -->
+    <tlLogic id="TL_J11" type="static" programID="0" offset="0">
+        <phase duration="31" state="GGgrrrGGgrrr"/>
+        <phase duration="4"  state="yyyrrryyyrrr"/>
+        <phase duration="25" state="rrrGGgrrrGGg"/>
+        <phase duration="4"  state="rrryyyrrryyy"/>
+    </tlLogic>
+    <tlLogic id="TL_J21" type="static" programID="0" offset="5">
+        <phase duration="31" state="GGgrrrGGgrrr"/>
+        <phase duration="4"  state="yyyrrryyyrrr"/>
+        <phase duration="25" state="rrrGGgrrrGGg"/>
+        <phase duration="4"  state="rrryyyrrryyy"/>
+    </tlLogic>
+
+    <!-- Row 0: South Avenue (2 lanes, 13.89 m/s) -->
+    <edge id="E_00_10" from="J00" to="J10" priority="2">
+        <lane id="E_00_10_0" index="0" speed="13.89" length="300.00" shape="0.00,-4.80 300.00,-4.80"/>
+        <lane id="E_00_10_1" index="1" speed="13.89" length="300.00" shape="0.00,-1.60 300.00,-1.60"/>
+    </edge>
+    <edge id="E_10_00" from="J10" to="J00" priority="2">
+        <lane id="E_10_00_0" index="0" speed="13.89" length="300.00" shape="300.00,4.80 0.00,4.80"/>
+        <lane id="E_10_00_1" index="1" speed="13.89" length="300.00" shape="300.00,1.60 0.00,1.60"/>
+    </edge>
+    <edge id="E_10_20" from="J10" to="J20" priority="2">
+        <lane id="E_10_20_0" index="0" speed="13.89" length="300.00" shape="300.00,-4.80 600.00,-4.80"/>
+        <lane id="E_10_20_1" index="1" speed="13.89" length="300.00" shape="300.00,-1.60 600.00,-1.60"/>
+    </edge>
+    <edge id="E_20_10" from="J20" to="J10" priority="2">
+        <lane id="E_20_10_0" index="0" speed="13.89" length="300.00" shape="600.00,4.80 300.00,4.80"/>
+        <lane id="E_20_10_1" index="1" speed="13.89" length="300.00" shape="600.00,1.60 300.00,1.60"/>
+    </edge>
+    <edge id="E_20_30" from="J20" to="J30" priority="2">
+        <lane id="E_20_30_0" index="0" speed="13.89" length="300.00" shape="600.00,-4.80 900.00,-4.80"/>
+        <lane id="E_20_30_1" index="1" speed="13.89" length="300.00" shape="600.00,-1.60 900.00,-1.60"/>
+    </edge>
+    <edge id="E_30_20" from="J30" to="J20" priority="2">
+        <lane id="E_30_20_0" index="0" speed="13.89" length="300.00" shape="900.00,4.80 600.00,4.80"/>
+        <lane id="E_30_20_1" index="1" speed="13.89" length="300.00" shape="900.00,1.60 600.00,1.60"/>
+    </edge>
+
+    <!-- Row 1: Central Arterial Avenue (3 lanes, 16.67 m/s) -->
+    <edge id="E_01_11" from="J01" to="J11" priority="3">
+        <lane id="E_01_11_0" index="0" speed="16.67" length="300.00" shape="0.00,292.00 300.00,292.00"/>
+        <lane id="E_01_11_1" index="1" speed="16.67" length="300.00" shape="0.00,295.20 300.00,295.20"/>
+        <lane id="E_01_11_2" index="2" speed="16.67" length="300.00" shape="0.00,298.40 300.00,298.40"/>
+    </edge>
+    <edge id="E_11_01" from="J11" to="J01" priority="3">
+        <lane id="E_11_01_0" index="0" speed="16.67" length="300.00" shape="300.00,308.00 0.00,308.00"/>
+        <lane id="E_11_01_1" index="1" speed="16.67" length="300.00" shape="300.00,304.80 0.00,304.80"/>
+        <lane id="E_11_01_2" index="2" speed="16.67" length="300.00" shape="300.00,301.60 0.00,301.60"/>
+    </edge>
+    <edge id="E_11_21" from="J11" to="J21" priority="3">
+        <lane id="E_11_21_0" index="0" speed="16.67" length="300.00" shape="300.00,292.00 600.00,292.00"/>
+        <lane id="E_11_21_1" index="1" speed="16.67" length="300.00" shape="300.00,295.20 600.00,295.20"/>
+        <lane id="E_11_21_2" index="2" speed="16.67" length="300.00" shape="300.00,298.40 600.00,298.40"/>
+    </edge>
+    <edge id="E_21_11" from="J21" to="J11" priority="3">
+        <lane id="E_21_11_0" index="0" speed="16.67" length="300.00" shape="600.00,308.00 300.00,308.00"/>
+        <lane id="E_21_11_1" index="1" speed="16.67" length="300.00" shape="600.00,304.80 300.00,304.80"/>
+        <lane id="E_21_11_2" index="2" speed="16.67" length="300.00" shape="600.00,301.60 300.00,301.60"/>
+    </edge>
+    <edge id="E_21_31" from="J21" to="J31" priority="3">
+        <lane id="E_21_31_0" index="0" speed="16.67" length="300.00" shape="600.00,292.00 900.00,292.00"/>
+        <lane id="E_21_31_1" index="1" speed="16.67" length="300.00" shape="600.00,295.20 900.00,295.20"/>
+        <lane id="E_21_31_2" index="2" speed="16.67" length="300.00" shape="600.00,298.40 900.00,298.40"/>
+    </edge>
+    <edge id="E_31_21" from="J31" to="J21" priority="3">
+        <lane id="E_31_21_0" index="0" speed="16.67" length="300.00" shape="900.00,308.00 600.00,308.00"/>
+        <lane id="E_31_21_1" index="1" speed="16.67" length="300.00" shape="900.00,304.80 600.00,304.80"/>
+        <lane id="E_31_21_2" index="2" speed="16.67" length="300.00" shape="900.00,301.60 600.00,301.60"/>
+    </edge>
+
+    <!-- Row 2: North Avenue (2 lanes, 13.89 m/s) -->
+    <edge id="E_02_12" from="J02" to="J12" priority="2">
+        <lane id="E_02_12_0" index="0" speed="13.89" length="300.00" shape="0.00,595.20 300.00,595.20"/>
+        <lane id="E_02_12_1" index="1" speed="13.89" length="300.00" shape="0.00,598.40 300.00,598.40"/>
+    </edge>
+    <edge id="E_12_02" from="J12" to="J02" priority="2">
+        <lane id="E_12_02_0" index="0" speed="13.89" length="300.00" shape="300.00,604.80 0.00,604.80"/>
+        <lane id="E_12_02_1" index="1" speed="13.89" length="300.00" shape="300.00,601.60 0.00,601.60"/>
+    </edge>
+    <edge id="E_12_22" from="J12" to="J22" priority="2">
+        <lane id="E_12_22_0" index="0" speed="13.89" length="300.00" shape="300.00,595.20 600.00,595.20"/>
+        <lane id="E_12_22_1" index="1" speed="13.89" length="300.00" shape="300.00,598.40 600.00,598.40"/>
+    </edge>
+    <edge id="E_22_12" from="J22" to="J12" priority="2">
+        <lane id="E_22_12_0" index="0" speed="13.89" length="300.00" shape="600.00,604.80 300.00,604.80"/>
+        <lane id="E_22_12_1" index="1" speed="13.89" length="300.00" shape="600.00,601.60 300.00,601.60"/>
+    </edge>
+    <edge id="E_22_32" from="J22" to="J32" priority="2">
+        <lane id="E_22_32_0" index="0" speed="13.89" length="300.00" shape="600.00,595.20 900.00,595.20"/>
+        <lane id="E_22_32_1" index="1" speed="13.89" length="300.00" shape="600.00,598.40 900.00,598.40"/>
+    </edge>
+    <edge id="E_32_22" from="J32" to="J22" priority="2">
+        <lane id="E_32_22_0" index="0" speed="13.89" length="300.00" shape="900.00,604.80 600.00,604.80"/>
+        <lane id="E_32_22_1" index="1" speed="13.89" length="300.00" shape="900.00,601.60 600.00,601.60"/>
+    </edge>
+
+    <!-- Column 0: West Cross Street (2 lanes, 11.11 m/s) -->
+    <edge id="E_00_01" from="J00" to="J01" priority="1">
+        <lane id="E_00_01_0" index="0" speed="11.11" length="300.00" shape="4.80,0.00 4.80,300.00"/>
+        <lane id="E_00_01_1" index="1" speed="11.11" length="300.00" shape="1.60,0.00 1.60,300.00"/>
+    </edge>
+    <edge id="E_01_00" from="J01" to="J00" priority="1">
+        <lane id="E_01_00_0" index="0" speed="11.11" length="300.00" shape="-4.80,300.00 -4.80,0.00"/>
+        <lane id="E_01_00_1" index="1" speed="11.11" length="300.00" shape="-1.60,300.00 -1.60,0.00"/>
+    </edge>
+    <edge id="E_01_02" from="J01" to="J02" priority="1">
+        <lane id="E_01_02_0" index="0" speed="11.11" length="300.00" shape="4.80,300.00 4.80,600.00"/>
+        <lane id="E_01_02_1" index="1" speed="11.11" length="300.00" shape="1.60,300.00 1.60,600.00"/>
+    </edge>
+    <edge id="E_02_01" from="J02" to="J01" priority="1">
+        <lane id="E_02_01_0" index="0" speed="11.11" length="300.00" shape="-4.80,600.00 -4.80,300.00"/>
+        <lane id="E_02_01_1" index="1" speed="11.11" length="300.00" shape="-1.60,600.00 -1.60,300.00"/>
+    </edge>
+
+    <!-- Column 1: Central-West Cross Street (2 lanes, 11.11 m/s) -->
+    <edge id="E_10_11" from="J10" to="J11" priority="1">
+        <lane id="E_10_11_0" index="0" speed="11.11" length="300.00" shape="304.80,0.00 304.80,300.00"/>
+        <lane id="E_10_11_1" index="1" speed="11.11" length="300.00" shape="301.60,0.00 301.60,300.00"/>
+    </edge>
+    <edge id="E_11_10" from="J11" to="J10" priority="1">
+        <lane id="E_11_10_0" index="0" speed="11.11" length="300.00" shape="295.20,300.00 295.20,0.00"/>
+        <lane id="E_11_10_1" index="1" speed="11.11" length="300.00" shape="298.40,300.00 298.40,0.00"/>
+    </edge>
+    <edge id="E_11_12" from="J11" to="J12" priority="1">
+        <lane id="E_11_12_0" index="0" speed="11.11" length="300.00" shape="304.80,300.00 304.80,600.00"/>
+        <lane id="E_11_12_1" index="1" speed="11.11" length="300.00" shape="301.60,300.00 301.60,600.00"/>
+    </edge>
+    <edge id="E_12_11" from="J12" to="J11" priority="1">
+        <lane id="E_12_11_0" index="0" speed="11.11" length="300.00" shape="295.20,600.00 295.20,300.00"/>
+        <lane id="E_12_11_1" index="1" speed="11.11" length="300.00" shape="298.40,600.00 298.40,300.00"/>
+    </edge>
+
+    <!-- Column 2: Central-East Cross Street (2 lanes, 11.11 m/s) -->
+    <edge id="E_20_21" from="J20" to="J21" priority="1">
+        <lane id="E_20_21_0" index="0" speed="11.11" length="300.00" shape="604.80,0.00 604.80,300.00"/>
+        <lane id="E_20_21_1" index="1" speed="11.11" length="300.00" shape="601.60,0.00 601.60,300.00"/>
+    </edge>
+    <edge id="E_21_20" from="J21" to="J20" priority="1">
+        <lane id="E_21_20_0" index="0" speed="11.11" length="300.00" shape="595.20,300.00 595.20,0.00"/>
+        <lane id="E_21_20_1" index="1" speed="11.11" length="300.00" shape="598.40,300.00 598.40,0.00"/>
+    </edge>
+    <edge id="E_21_22" from="J21" to="J22" priority="1">
+        <lane id="E_21_22_0" index="0" speed="11.11" length="300.00" shape="604.80,300.00 604.80,600.00"/>
+        <lane id="E_21_22_1" index="1" speed="11.11" length="300.00" shape="601.60,300.00 601.60,600.00"/>
+    </edge>
+    <edge id="E_22_21" from="J22" to="J21" priority="1">
+        <lane id="E_22_21_0" index="0" speed="11.11" length="300.00" shape="595.20,600.00 595.20,300.00"/>
+        <lane id="E_22_21_1" index="1" speed="11.11" length="300.00" shape="598.40,600.00 598.40,300.00"/>
+    </edge>
+
+    <!-- Column 3: East Cross Street (2 lanes, 11.11 m/s) -->
+    <edge id="E_30_31" from="J30" to="J31" priority="1">
+        <lane id="E_30_31_0" index="0" speed="11.11" length="300.00" shape="904.80,0.00 904.80,300.00"/>
+        <lane id="E_30_31_1" index="1" speed="11.11" length="300.00" shape="901.60,0.00 901.60,300.00"/>
+    </edge>
+    <edge id="E_31_30" from="J31" to="J30" priority="1">
+        <lane id="E_31_30_0" index="0" speed="11.11" length="300.00" shape="895.20,300.00 895.20,0.00"/>
+        <lane id="E_31_30_1" index="1" speed="11.11" length="300.00" shape="898.40,300.00 898.40,0.00"/>
+    </edge>
+    <edge id="E_31_32" from="J31" to="J32" priority="1">
+        <lane id="E_31_32_0" index="0" speed="11.11" length="300.00" shape="904.80,300.00 904.80,600.00"/>
+        <lane id="E_31_32_1" index="1" speed="11.11" length="300.00" shape="901.60,300.00 901.60,600.00"/>
+    </edge>
+    <edge id="E_32_31" from="J32" to="J31" priority="1">
+        <lane id="E_32_31_0" index="0" speed="11.11" length="300.00" shape="895.20,600.00 895.20,300.00"/>
+        <lane id="E_32_31_1" index="1" speed="11.11" length="300.00" shape="898.40,600.00 898.40,300.00"/>
+    </edge>
+
+    <!-- Junctions -->
+    <junction id="J00" type="priority" x="0.00" y="0.00" incLanes="E_10_00_0 E_10_00_1 E_01_00_0 E_01_00_1" intLanes="" shape="-10.00,-10.00 -10.00,10.00 10.00,10.00 10.00,-10.00"/>
+    <junction id="J10" type="priority" x="300.00" y="0.00" incLanes="E_00_10_0 E_00_10_1 E_20_10_0 E_20_10_1 E_11_10_0 E_11_10_1" intLanes="" shape="290.00,-10.00 290.00,10.00 310.00,10.00 310.00,-10.00"/>
+    <junction id="J20" type="priority" x="600.00" y="0.00" incLanes="E_10_20_0 E_10_20_1 E_30_20_0 E_30_20_1 E_21_20_0 E_21_20_1" intLanes="" shape="590.00,-10.00 590.00,10.00 610.00,10.00 610.00,-10.00"/>
+    <junction id="J30" type="priority" x="900.00" y="0.00" incLanes="E_20_30_0 E_20_30_1 E_31_30_0 E_31_30_1" intLanes="" shape="890.00,-10.00 890.00,10.00 910.00,10.00 910.00,-10.00"/>
+
+    <junction id="J01" type="priority" x="0.00" y="300.00" incLanes="E_00_01_0 E_00_01_1 E_02_01_0 E_02_01_1 E_11_01_0 E_11_01_1 E_11_01_2" intLanes="" shape="-10.00,290.00 -10.00,310.00 10.00,310.00 10.00,290.00"/>
+    <junction id="J11" type="traffic_light" x="300.00" y="300.00" incLanes="E_01_11_0 E_01_11_1 E_01_11_2 E_21_11_0 E_21_11_1 E_21_11_2 E_10_11_0 E_10_11_1 E_12_11_0 E_12_11_1" intLanes="" shape="290.00,290.00 290.00,310.00 310.00,310.00 310.00,290.00"/>
+    <junction id="J21" type="traffic_light" x="600.00" y="300.00" incLanes="E_11_21_0 E_11_21_1 E_11_21_2 E_31_21_0 E_31_21_1 E_31_21_2 E_20_21_0 E_20_21_1 E_22_21_0 E_22_21_1" intLanes="" shape="590.00,290.00 590.00,310.00 610.00,310.00 610.00,290.00"/>
+    <junction id="J31" type="priority" x="900.00" y="300.00" incLanes="E_21_31_0 E_21_31_1 E_21_31_2 E_30_31_0 E_30_31_1 E_32_31_0 E_32_31_1" intLanes="" shape="890.00,290.00 890.00,310.00 910.00,310.00 910.00,290.00"/>
+
+    <junction id="J02" type="priority" x="0.00" y="600.00" incLanes="E_01_02_0 E_01_02_1 E_12_02_0 E_12_02_1" intLanes="" shape="-10.00,590.00 -10.00,610.00 10.00,610.00 10.00,590.00"/>
+    <junction id="J12" type="priority" x="300.00" y="600.00" incLanes="E_02_12_0 E_02_12_1 E_22_12_0 E_22_12_1 E_11_12_0 E_11_12_1" intLanes="" shape="290.00,590.00 290.00,610.00 310.00,610.00 310.00,590.00"/>
+    <junction id="J22" type="priority" x="600.00" y="600.00" incLanes="E_12_22_0 E_12_22_1 E_32_22_0 E_32_22_1 E_21_22_0 E_21_22_1" intLanes="" shape="590.00,590.00 590.00,610.00 610.00,610.00 610.00,590.00"/>
+    <junction id="J32" type="priority" x="900.00" y="600.00" incLanes="E_22_32_0 E_22_32_1 E_31_32_0 E_31_32_1" intLanes="" shape="890.00,590.00 890.00,610.00 910.00,610.00 910.00,590.00"/>
+
+    <!-- Inter-edge Connections -->
+    <!-- Row 0 Through Connections -->
+    <connection from="E_00_10" to="E_10_20" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from="E_00_10" to="E_10_20" fromLane="1" toLane="1" dir="s" state="M"/>
+    <connection from="E_00_10" to="E_10_11" fromLane="1" toLane="1" dir="l" state="M"/>
+    <connection from="E_10_20" to="E_20_30" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from="E_10_20" to="E_20_30" fromLane="1" toLane="1" dir="s" state="M"/>
+    <connection from="E_10_20" to="E_20_21" fromLane="1" toLane="1" dir="l" state="M"/>
+
+    <connection from="E_30_20" to="E_20_10" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from="E_30_20" to="E_20_10" fromLane="1" toLane="1" dir="s" state="M"/>
+    <connection from="E_30_20" to="E_20_21" fromLane="1" toLane="1" dir="r" state="M"/>
+    <connection from="E_20_10" to="E_10_00" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from="E_20_10" to="E_10_00" fromLane="1" toLane="1" dir="s" state="M"/>
+    <connection from="E_20_10" to="E_10_11" fromLane="1" toLane="1" dir="r" state="M"/>
+
+    <!-- Row 1 Arterial Through Connections -->
+    <connection from="E_01_11" to="E_11_21" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from="E_01_11" to="E_11_21" fromLane="1" toLane="1" dir="s" state="M"/>
+    <connection from="E_01_11" to="E_11_21" fromLane="2" toLane="2" dir="s" state="M"/>
+    <connection from="E_01_11" to="E_11_12" fromLane="2" toLane="1" dir="l" state="M"/>
+    <connection from="E_01_11" to="E_11_10" fromLane="0" toLane="0" dir="r" state="M"/>
+
+    <connection from="E_11_21" to="E_21_31" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from="E_11_21" to="E_21_31" fromLane="1" toLane="1" dir="s" state="M"/>
+    <connection from="E_11_21" to="E_21_31" fromLane="2" toLane="2" dir="s" state="M"/>
+    <connection from="E_11_21" to="E_21_22" fromLane="2" toLane="1" dir="l" state="M"/>
+    <connection from="E_11_21" to="E_21_20" fromLane="0" toLane="0" dir="r" state="M"/>
+
+    <connection from="E_31_21" to="E_21_11" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from="E_31_21" to="E_21_11" fromLane="1" toLane="1" dir="s" state="M"/>
+    <connection from="E_31_21" to="E_21_11" fromLane="2" toLane="2" dir="s" state="M"/>
+    <connection from="E_31_21" to="E_21_20" fromLane="0" toLane="0" dir="l" state="M"/>
+    <connection from="E_31_21" to="E_21_22" fromLane="2" toLane="1" dir="r" state="M"/>
+
+    <connection from="E_21_11" to="E_11_01" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from="E_21_11" to="E_11_01" fromLane="1" toLane="1" dir="s" state="M"/>
+    <connection from="E_21_11" to="E_11_01" fromLane="2" toLane="2" dir="s" state="M"/>
+    <connection from="E_21_11" to="E_11_10" fromLane="0" toLane="0" dir="l" state="M"/>
+    <connection from="E_21_11" to="E_11_12" fromLane="2" toLane="1" dir="r" state="M"/>
+
+    <!-- Row 2 Through Connections -->
+    <connection from="E_02_12" to="E_12_22" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from="E_02_12" to="E_12_22" fromLane="1" toLane="1" dir="s" state="M"/>
+    <connection from="E_02_12" to="E_12_11" fromLane="0" toLane="0" dir="r" state="M"/>
+    <connection from="E_12_22" to="E_22_32" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from="E_12_22" to="E_22_32" fromLane="1" toLane="1" dir="s" state="M"/>
+    <connection from="E_12_22" to="E_22_21" fromLane="0" toLane="0" dir="r" state="M"/>
+
+    <connection from="E_32_22" to="E_22_12" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from="E_32_22" to="E_22_12" fromLane="1" toLane="1" dir="s" state="M"/>
+    <connection from="E_32_22" to="E_22_21" fromLane="1" toLane="1" dir="l" state="M"/>
+    <connection from="E_22_12" to="E_12_02" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from="E_22_12" to="E_12_02" fromLane="1" toLane="1" dir="s" state="M"/>
+    <connection from="E_22_12" to="E_12_11" fromLane="1" toLane="1" dir="l" state="M"/>
+
+    <!-- Column Cross Street Connections -->
+    <!-- Col 0 -->
+    <connection from="E_00_01" to="E_01_02" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from="E_00_01" to="E_01_02" fromLane="1" toLane="1" dir="s" state="M"/>
+    <connection from="E_00_01" to="E_01_11" fromLane="1" toLane="1" dir="r" state="M"/>
+    <connection from="E_02_01" to="E_01_00" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from="E_02_01" to="E_01_00" fromLane="1" toLane="1" dir="s" state="M"/>
+    <connection from="E_02_01" to="E_01_11" fromLane="0" toLane="0" dir="l" state="M"/>
+    <connection from="E_11_01" to="E_01_02" fromLane="1" toLane="1" dir="r" state="M"/>
+    <connection from="E_11_01" to="E_01_00" fromLane="0" toLane="0" dir="l" state="M"/>
+
+    <!-- Col 1 -->
+    <connection from="E_10_11" to="E_11_12" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from="E_10_11" to="E_11_12" fromLane="1" toLane="1" dir="s" state="M"/>
+    <connection from="E_10_11" to="E_11_21" fromLane="1" toLane="1" dir="r" state="M"/>
+    <connection from="E_10_11" to="E_11_01" fromLane="0" toLane="0" dir="l" state="M"/>
+
+    <connection from="E_12_11" to="E_11_10" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from="E_12_11" to="E_11_10" fromLane="1" toLane="1" dir="s" state="M"/>
+    <connection from="E_12_11" to="E_11_01" fromLane="1" toLane="1" dir="r" state="M"/>
+    <connection from="E_12_11" to="E_11_21" fromLane="0" toLane="0" dir="l" state="M"/>
+
+    <!-- Col 2 -->
+    <connection from="E_20_21" to="E_21_22" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from="E_20_21" to="E_21_22" fromLane="1" toLane="1" dir="s" state="M"/>
+    <connection from="E_20_21" to="E_21_31" fromLane="1" toLane="1" dir="r" state="M"/>
+    <connection from="E_20_21" to="E_21_11" fromLane="0" toLane="0" dir="l" state="M"/>
+
+    <connection from="E_22_21" to="E_21_20" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from="E_22_21" to="E_21_20" fromLane="1" toLane="1" dir="s" state="M"/>
+    <connection from="E_22_21" to="E_21_11" fromLane="1" toLane="1" dir="r" state="M"/>
+    <connection from="E_22_21" to="E_21_31" fromLane="0" toLane="0" dir="l" state="M"/>
+
+    <!-- Col 3 -->
+    <connection from="E_30_31" to="E_31_32" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from="E_30_31" to="E_31_32" fromLane="1" toLane="1" dir="s" state="M"/>
+    <connection from="E_30_31" to="E_31_21" fromLane="0" toLane="0" dir="l" state="M"/>
+
+    <connection from="E_32_31" to="E_31_30" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from="E_32_31" to="E_31_30" fromLane="1" toLane="1" dir="s" state="M"/>
+    <connection from="E_32_31" to="E_31_21" fromLane="1" toLane="1" dir="r" state="M"/>
+
+    <connection from="E_21_31" to="E_31_32" fromLane="1" toLane="1" dir="l" state="M"/>
+    <connection from="E_21_31" to="E_31_30" fromLane="0" toLane="0" dir="r" state="M"/>
+
+    <!-- Corner Turns -->
+    <connection from="E_01_00" to="E_00_10" fromLane="0" toLane="0" dir="l" state="M"/>
+    <connection from="E_10_00" to="E_00_01" fromLane="0" toLane="0" dir="r" state="M"/>
+    <connection from="E_01_02" to="E_02_12" fromLane="0" toLane="0" dir="r" state="M"/>
+    <connection from="E_12_02" to="E_02_01" fromLane="0" toLane="0" dir="l" state="M"/>
+
+    <connection from="E_20_30" to="E_30_31" fromLane="0" toLane="0" dir="l" state="M"/>
+    <connection from="E_31_30" to="E_30_20" fromLane="0" toLane="0" dir="r" state="M"/>
+    <connection from="E_22_32" to="E_32_31" fromLane="0" toLane="0" dir="r" state="M"/>
+    <connection from="E_31_32" to="E_32_22" fromLane="0" toLane="0" dir="l" state="M"/>
+
+    <!-- Intermediate Boundary Turns -->
+    <connection from="E_11_10" to="E_10_20" fromLane="0" toLane="0" dir="l" state="M"/>
+    <connection from="E_11_10" to="E_10_00" fromLane="1" toLane="1" dir="r" state="M"/>
+    <connection from="E_21_20" to="E_20_30" fromLane="0" toLane="0" dir="l" state="M"/>
+    <connection from="E_21_20" to="E_20_10" fromLane="1" toLane="1" dir="r" state="M"/>
+
+    <connection from="E_11_12" to="E_12_22" fromLane="1" toLane="1" dir="r" state="M"/>
+    <connection from="E_11_12" to="E_12_02" fromLane="0" toLane="0" dir="l" state="M"/>
+    <connection from="E_21_22" to="E_22_32" fromLane="1" toLane="1" dir="r" state="M"/>
+    <connection from="E_21_22" to="E_22_12" fromLane="0" toLane="0" dir="l" state="M"/>
+
+</net>

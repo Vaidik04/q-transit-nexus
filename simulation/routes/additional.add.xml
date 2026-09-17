@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Q-TRANSIT NEXUS - Additional Infrastructure Definitions
+  1. Public Transit Bus Stops: Line B101 stations along Central Arterial (Row 1).
+  2. EV Fast-Charging Stations: Distributed charging hubs for electric private and fleet vehicles.
+-->
+<additional xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/additional_file.xsd">
+
+    <!-- =================================================================== -->
+    <!-- PUBLIC TRANSIT BUS STOPS                                            -->
+    <!-- =================================================================== -->
+    <!-- Eastbound Bus Stops (Curb Lane: index 0) -->
+    <busStop id="busStop_E_01_11" lane="E_01_11_0" startPos="100.0" endPos="135.0" friendlyPos="true" name="West Gateway Station"/>
+    <busStop id="busStop_E_11_21" lane="E_11_21_0" startPos="110.0" endPos="145.0" friendlyPos="true" name="Central Tech Park"/>
+    <busStop id="busStop_E_21_31" lane="E_21_31_0" startPos="100.0" endPos="135.0" friendlyPos="true" name="East Transit Terminal"/>
+
+    <!-- Westbound Bus Stops -->
+    <busStop id="busStop_E_31_21" lane="E_31_21_0" startPos="100.0" endPos="135.0" friendlyPos="true" name="East Terminal Return"/>
+    <busStop id="busStop_E_21_11" lane="E_21_11_0" startPos="110.0" endPos="145.0" friendlyPos="true" name="Central Tech Park Return"/>
+    <busStop id="busStop_E_11_01" lane="E_11_01_0" startPos="100.0" endPos="135.0" friendlyPos="true" name="West Gateway Return"/>
+
+    <!-- =================================================================== -->
+    <!-- ELECTRIC VEHICLE (EV) FAST CHARGING STATIONS                        -->
+    <!-- =================================================================== -->
+    <!-- Central Hub EV Charger (150 kW DC Fast Charger) -->
+    <chargingStation id="cs_central_hub" lane="E_11_21_0" startPos="180.0" endPos="210.0"
+                     friendlyPos="true" power="150000" efficiency="0.95"/>
+
+    <!-- West Feeder EV Charger (50 kW Fast Charger) -->
+    <chargingStation id="cs_west_feeder" lane="E_00_10_0" startPos="80.0" endPos="110.0"
+                     friendlyPos="true" power="50000" efficiency="0.92"/>
+
+    <!-- North Logistics EV Charger (100 kW Fleet Depot Charger) -->
+    <chargingStation id="cs_north_depot" lane="E_12_22_0" startPos="100.0" endPos="130.0"
+                     friendlyPos="true" power="100000" efficiency="0.94"/>
+
+</additional>

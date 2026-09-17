@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Q-TRANSIT NEXUS - Traffic Light Logic for Signalized Intersections
+  Nodes: J11, J21
+  4-phase design: EW Green, EW Yellow, NS Green, NS Yellow
+-->
+<tlLogics xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/tllogic_file.xsd">
+    <tlLogic id="TL_J11" type="static" programID="0" offset="0">
+        <!-- East-West Green -->
+        <phase duration="31" state="GGgrrrGGgrrr"/>
+        <!-- East-West Yellow -->
+        <phase duration="4"  state="yyyrrryyyrrr"/>
+        <!-- North-South Green -->
+        <phase duration="25" state="rrrGGgrrrGGg"/>
+        <!-- North-South Yellow -->
+        <phase duration="4"  state="rrryyyrrryyy"/>
+    </tlLogic>
+
+    <tlLogic id="TL_J21" type="static" programID="0" offset="5">
+        <!-- East-West Green (coordinated with J11 with offset) -->
+        <phase duration="31" state="GGgrrrGGgrrr"/>
+        <!-- East-West Yellow -->
+        <phase duration="4"  state="yyyrrryyyrrr"/>
+        <!-- North-South Green -->
+        <phase duration="25" state="rrrGGgrrrGGg"/>
+        <!-- North-South Yellow -->
+        <phase duration="4"  state="rrryyyrrryyy"/>
+    </tlLogic>
+</tlLogics>

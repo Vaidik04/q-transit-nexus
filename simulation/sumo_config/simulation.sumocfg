@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Q-TRANSIT NEXUS - Main SUMO Configuration File
+  Binds network geometry, multimodal demand, and additional transit stops.
+  Configured for deterministic headless and GUI execution.
+-->
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="../network/network.net.xml"/>
+        <route-files value="../routes/routes.rou.xml"/>
+        <additional-files value="../routes/additional.add.xml"/>
+    </input>
+
+    <time>
+        <begin value="0"/>
+        <end value="3600"/>
+        <step-length value="1.0"/>
+    </time>
+
+    <processing>
+        <ignore-route-errors value="true"/>
+        <collision.action value="warn"/>
+        <collision.stoptime value="30"/>
+        <time-to-teleport value="120"/>
+        <waiting-time-memory value="1000"/>
+    </processing>
+
+    <routing>
+        <device.rerouting.adaptation-interval value="10"/>
+        <device.rerouting.adaptation-weight value="0.5"/>
+    </routing>
+
+    <report>
+        <verbose value="false"/>
+        <no-step-log value="true"/>
+        <duration-log.statistics value="true"/>
+        <no-warnings value="false"/>
+    </report>
+
+    <gui_only>
+        <gui-settings-file value=""/>
+        <start value="true"/>
+        <quit-on-end value="false"/>
+    </gui_only>
+
+</configuration>

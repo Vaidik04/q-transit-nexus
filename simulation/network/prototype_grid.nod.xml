@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Q-TRANSIT NEXUS - Prototype City Network Nodes
+  Grid: 4 columns (X: 0, 300, 600, 900) x 3 rows (Y: 0, 300, 600)
+  Total: 12 intersections
+  - Core arterial junctions (J11, J21) are traffic lights
+  - Other intersections are priority junctions
+-->
+<nodes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/nodes_file.xsd">
+    <!-- Row 0 (South Avenue) -->
+    <node id="J00" x="0.0"   y="0.0"   type="priority"/>
+    <node id="J10" x="300.0" y="0.0"   type="priority"/>
+    <node id="J20" x="600.0" y="0.0"   type="priority"/>
+    <node id="J30" x="900.0" y="0.0"   type="priority"/>
+
+    <!-- Row 1 (Central Arterial Avenue) -->
+    <node id="J01" x="0.0"   y="300.0" type="priority"/>
+    <node id="J11" x="300.0" y="300.0" type="traffic_light" tl="TL_J11"/>
+    <node id="J21" x="600.0" y="300.0" type="traffic_light" tl="TL_J21"/>
+    <node id="J31" x="900.0" y="300.0" type="priority"/>
+
+    <!-- Row 2 (North Avenue) -->
+    <node id="J02" x="0.0"   y="600.0" type="priority"/>
+    <node id="J12" x="300.0" y="600.0" type="priority"/>
+    <node id="J22" x="600.0" y="600.0" type="priority"/>
+    <node id="J32" x="900.0" y="600.0" type="priority"/>
+</nodes>

@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Q-TRANSIT NEXUS - Multimodal Traffic Demand Specification
+  Vehicles:
+  - Private Commuters (ICE & Electric Vehicles)
+  - Logistics Delivery Vans & Heavy Delivery Trucks
+  - Public Transit Buses (Line B101 with multi-stop passenger dwell)
+  - Emergency Medical Service Ambulance (HIGH priority, green-wave candidate)
+  Every vehicle includes metadata: vehicle_id, type, origin, destination, route, priority, battery_soc (for EVs)
+-->
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+
+    <!-- =================================================================== -->
+    <!-- VEHICLE TYPE DEFINITIONS                                            -->
+    <!-- =================================================================== -->
+
+    <!-- Private Commuter Car (ICE): standard passenger parameters -->
+    <vType id="car" vClass="passenger" accel="2.6" decel="4.5" sigma="0.5" length="4.50"
+           minGap="2.50" maxSpeed="33.33" color="0.2,0.6,0.9" guiShape="passenger"/>
+
+    <!-- Electric Passenger Vehicle (EV): instant torque, zero tailpipe emissions -->
+    <vType id="car_ev" vClass="passenger" accel="3.0" decel="4.8" sigma="0.4" length="4.60"
+           minGap="2.50" maxSpeed="33.33" color="0.1,0.9,0.9" guiShape="passenger/sedan"
+           emissionClass="Zero/default"/>
+
+    <!-- Logistics Delivery Van (ICE): commercial freight, conservative acceleration -->
+    <vType id="delivery" vClass="delivery" accel="1.8" decel="3.5" sigma="0.4" length="7.20"
+           minGap="3.00" maxSpeed="22.22" color="0.95,0.7,0.15" guiShape="delivery"/>
+
+    <!-- Electric Logistics Fleet Van (EV): zero-emission urban freight -->
+    <vType id="delivery_ev" vClass="delivery" accel="2.2" decel="3.8" sigma="0.3" length="6.80"
+           minGap="3.00" maxSpeed="22.22" color="0.9,0.85,0.2" guiShape="delivery"
+           emissionClass="Zero/default"/>
+
+    <!-- Public Transit Bus: high passenger capacity, scheduled dwells -->
+    <vType id="bus" vClass="bus" accel="1.3" decel="3.2" sigma="0.2" length="12.00"
+           minGap="3.50" maxSpeed="19.44" color="0.1,0.8,0.3" guiShape="bus" personCapacity="60"/>
+
+    <!-- Emergency Medical Service (Ambulance): HIGH priority, aggressive navigation -->
+    <vType id="emergency" vClass="emergency" accel="3.8" decel="5.5" sigma="0.1" length="6.50"
+           minGap="1.50" maxSpeed="38.89" color="1.0,0.1,0.1" guiShape="emergency"
+           jmDriveAfterRedTime="10" lcStrategic="2.5" lcCooperative="0.0" lcSpeedGain="2.0"/>
+
+    <!-- =================================================================== -->
+    <!-- ROUTE DEFINITIONS                                                   -->
+    <!-- =================================================================== -->
+
+    <!-- Central Arterial Corridors -->
+    <route id="route_arterial_east" edges="E_01_11 E_11_21 E_21_31"/>
+    <route id="route_arterial_west" edges="E_31_21 E_21_11 E_11_01"/>
+
+    <!-- Perimeter Avenues -->
+    <route id="route_south_east" edges="E_00_10 E_10_20 E_20_30"/>
+    <route id="route_south_west" edges="E_30_20 E_20_10 E_10_00"/>
+    <route id="route_north_east" edges="E_02_12 E_12_22 E_22_32"/>
+    <route id="route_north_west" edges="E_32_22 E_22_12 E_12_02"/>
+
+    <!-- Cross-Town & Diversion Paths (for AT-DQPSO rerouting demonstration) -->
+    <route id="route_c1_north" edges="E_10_11 E_11_12"/>
+    <route id="route_c2_south" edges="E_22_21 E_21_20"/>
+    <route id="route_diversion_north" edges="E_01_11 E_11_12 E_12_22 E_22_21 E_21_31"/>
+    <route id="route_diversion_south" edges="E_01_11 E_11_10 E_10_20 E_20_21 E_21_31"/>
+    <route id="route_ambulance_express" edges="E_00_10 E_10_11 E_11_21 E_21_31"/>
+
+    <!-- =================================================================== -->
+    <!-- PUBLIC TRANSIT (BUS SIMULATION)                                     -->
+    <!-- =================================================================== -->
+
+    <!-- Bus Line B101 Eastbound: 3 passenger stations along Central Arterial -->
+    <vehicle id="bus_B101_1" type="bus" depart="15.00" line="B101" route="route_arterial_east">
+        <param key="vehicle_id" value="bus_B101_1"/>
+        <param key="type" value="bus"/>
+        <param key="origin" value="E_01_11"/>
+        <param key="destination" value="E_21_31"/>
+        <param key="route" value="route_arterial_east"/>
+        <param key="priority" value="MEDIUM"/>
+        <param key="passenger_load" value="28"/>
+        <param key="scheduled_delay" value="0.0"/>
+        <stop busStop="busStop_E_01_11" duration="20.00" until="45.00"/>
+        <stop busStop="busStop_E_11_21" duration="25.00" until="100.00"/>
+        <stop busStop="busStop_E_21_31" duration="20.00" until="155.00"/>
+    </vehicle>
+
+    <!-- Bus Line B101 Westbound: Return trip -->
+    <vehicle id="bus_B101_2" type="bus" depart="30.00" line="B101" route="route_arterial_west">
+        <param key="vehicle_id" value="bus_B101_2"/>
+        <param key="type" value="bus"/>
+        <param key="origin" value="E_31_21"/>
+        <param key="destination" value="E_11_01"/>
+        <param key="route" value="route_arterial_west"/>
+        <param key="priority" value="MEDIUM"/>
+        <param key="passenger_load" value="34"/>
+        <param key="scheduled_delay" value="0.0"/>
+        <stop busStop="busStop_E_31_21" duration="20.00" until="60.00"/>
+        <stop busStop="busStop_E_21_11" duration="25.00" until="115.00"/>
+        <stop busStop="busStop_E_11_01" duration="20.00" until="170.00"/>
+    </vehicle>
+
+    <!-- =================================================================== -->
+    <!-- EMERGENCY VEHICLE (AMBULANCE)                                       -->
+    <!-- =================================================================== -->
+
+    <!-- Priority Medical Response (Ambulance): dispatched toward East Corridor -->
+    <vehicle id="ambulance_MED01" type="emergency" depart="50.00" route="route_ambulance_express">
+        <param key="vehicle_id" value="ambulance_MED01"/>
+        <param key="type" value="emergency"/>
+        <param key="origin" value="E_00_10"/>
+        <param key="destination" value="E_21_31"/>
+        <param key="route" value="route_ambulance_express"/>
+        <param key="priority" value="HIGH"/>
+        <param key="dispatch_reason" value="Code-3 Critical Emergency"/>
+    </vehicle>
+
+    <!-- =================================================================== -->
+    <!-- ELECTRIC VEHICLES (EV FLEET & COMMUTERS)                            -->
+    <!-- =================================================================== -->
+
+    <vehicle id="ev_CAR01" type="car_ev" depart="10.00" route="route_arterial_east">
+        <param key="vehicle_id" value="ev_CAR01"/>
+        <param key="type" value="passenger_ev"/>
+        <param key="origin" value="E_01_11"/>
+        <param key="destination" value="E_21_31"/>
+        <param key="route" value="route_arterial_east"/>
+        <param key="priority" value="NORMAL"/>
+        <param key="battery_soc" value="78.5"/>
+        <param key="energy_consumption" value="0.165"/>
+        <param key="battery_capacity_kwh" value="65.0"/>
+    </vehicle>
+
+    <vehicle id="ev_DELIV01" type="delivery_ev" depart="32.00" route="route_south_east">
+        <param key="vehicle_id" value="ev_DELIV01"/>
+        <param key="type" value="delivery_ev"/>
+        <param key="origin" value="E_00_10"/>
+        <param key="destination" value="E_20_30"/>
+        <param key="route" value="route_south_east"/>
+        <param key="priority" value="LOW"/>
+        <param key="battery_soc" value="38.0"/>
+        <param key="energy_consumption" value="0.290"/>
+        <param key="battery_capacity_kwh" value="90.0"/>
+        <param key="charger_location" value="cs_west_feeder"/>
+    </vehicle>
+
+    <!-- =================================================================== -->
+    <!-- LOGISTICS DELIVERY VEHICLES                                         -->
+    <!-- =================================================================== -->
+
+    <vehicle id="deliv_LOG01" type="delivery" depart="5.00" route="route_arterial_east">
+        <param key="vehicle_id" value="deliv_LOG01"/>
+        <param key="type" value="delivery"/>
+        <param key="origin" value="E_01_11"/>
+        <param key="destination" value="E_21_31"/>
+        <param key="route" value="route_arterial_east"/>
+        <param key="priority" value="LOW"/>
+    </vehicle>
+
+    <vehicle id="deliv_LOG02" type="delivery" depart="25.00" route="route_south_east">
+        <param key="vehicle_id" value="deliv_LOG02"/>
+        <param key="type" value="delivery"/>
+        <param key="origin" value="E_00_10"/>
+        <param key="destination" value="E_20_30"/>
+        <param key="route" value="route_south_east"/>
+        <param key="priority" value="LOW"/>
+    </vehicle>
+
+    <vehicle id="deliv_LOG03" type="delivery" depart="65.00" route="route_north_east">
+        <param key="vehicle_id" value="deliv_LOG03"/>
+        <param key="type" value="delivery"/>
+        <param key="origin" value="E_02_12"/>
+        <param key="destination" value="E_22_32"/>
+        <param key="route" value="route_north_east"/>
+        <param key="priority" value="LOW"/>
+    </vehicle>
+
+    <!-- =================================================================== -->
+    <!-- DISCRETE PRIVATE CARS                                               -->
+    <!-- =================================================================== -->
+
+    <vehicle id="car_PV01" type="car" depart="1.00" route="route_arterial_east">
+        <param key="vehicle_id" value="car_PV01"/>
+        <param key="type" value="passenger"/>
+        <param key="origin" value="E_01_11"/>
+        <param key="destination" value="E_21_31"/>
+        <param key="route" value="route_arterial_east"/>
+        <param key="priority" value="NORMAL"/>
+    </vehicle>
+
+    <vehicle id="car_PV02" type="car" depart="8.00" route="route_arterial_west">
+        <param key="vehicle_id" value="car_PV02"/>
+        <param key="type" value="passenger"/>
+        <param key="origin" value="E_31_21"/>
+        <param key="destination" value="E_11_01"/>
+        <param key="route" value="route_arterial_west"/>
+        <param key="priority" value="NORMAL"/>
+    </vehicle>
+
+    <vehicle id="car_PV03" type="car" depart="12.00" route="route_south_east">
+        <param key="vehicle_id" value="car_PV03"/>
+        <param key="type" value="passenger"/>
+        <param key="origin" value="E_00_10"/>
+        <param key="destination" value="E_20_30"/>
+        <param key="route" value="route_south_east"/>
+        <param key="priority" value="NORMAL"/>
+    </vehicle>
+
+    <vehicle id="car_PV04" type="car" depart="18.00" route="route_north_east">
+        <param key="vehicle_id" value="car_PV04"/>
+        <param key="type" value="passenger"/>
+        <param key="origin" value="E_02_12"/>
+        <param key="destination" value="E_22_32"/>
+        <param key="route" value="route_north_east"/>
+        <param key="priority" value="NORMAL"/>
+    </vehicle>
+
+    <vehicle id="car_PV05" type="car" depart="22.00" route="route_arterial_east">
+        <param key="vehicle_id" value="car_PV05"/>
+        <param key="type" value="passenger"/>
+        <param key="origin" value="E_01_11"/>
+        <param key="destination" value="E_21_31"/>
+        <param key="route" value="route_arterial_east"/>
+        <param key="priority" value="NORMAL"/>
+    </vehicle>
+
+    <vehicle id="car_PV06" type="car" depart="35.00" route="route_c1_north">
+        <param key="vehicle_id" value="car_PV06"/>
+        <param key="type" value="passenger"/>
+        <param key="origin" value="E_10_11"/>
+        <param key="destination" value="E_11_12"/>
+        <param key="route" value="route_c1_north"/>
+        <param key="priority" value="NORMAL"/>
+    </vehicle>
+
+    <vehicle id="car_PV07" type="car" depart="40.00" route="route_c2_south">
+        <param key="vehicle_id" value="car_PV07"/>
+        <param key="type" value="passenger"/>
+        <param key="origin" value="E_22_21"/>
+        <param key="destination" value="E_21_20"/>
+        <param key="route" value="route_c2_south"/>
+        <param key="priority" value="NORMAL"/>
+    </vehicle>
+
+    <vehicle id="car_PV08" type="car" depart="48.00" route="route_arterial_east">
+        <param key="vehicle_id" value="car_PV08"/>
+        <param key="type" value="passenger"/>
+        <param key="origin" value="E_01_11"/>
+        <param key="destination" value="E_21_31"/>
+        <param key="route" value="route_arterial_east"/>
+        <param key="priority" value="NORMAL"/>
+    </vehicle>
+
+    <!-- =================================================================== -->
+    <!-- BACKGROUND MULTIMODAL TRAFFIC FLOWS (Sustained urban density)       -->
+    <!-- =================================================================== -->
+
+    <flow id="flow_arterial_east" type="car" route="route_arterial_east"
+          begin="60.00" end="1800.00" period="15.00">
+        <param key="type" value="passenger"/>
+        <param key="priority" value="NORMAL"/>
+    </flow>
+
+    <flow id="flow_arterial_west" type="car" route="route_arterial_west"
+          begin="60.00" end="1800.00" period="18.00">
+        <param key="type" value="passenger"/>
+        <param key="priority" value="NORMAL"/>
+    </flow>
+
+    <flow id="flow_south_east" type="car" route="route_south_east"
+          begin="60.00" end="1800.00" period="25.00">
+        <param key="type" value="passenger"/>
+        <param key="priority" value="NORMAL"/>
+    </flow>
+
+    <flow id="flow_north_east" type="car" route="route_north_east"
+          begin="60.00" end="1800.00" period="25.00">
+        <param key="type" value="passenger"/>
+        <param key="priority" value="NORMAL"/>
+    </flow>
+
+    <flow id="flow_delivery_east" type="delivery" route="route_arterial_east"
+          begin="80.00" end="1800.00" period="60.00">
+        <param key="type" value="delivery"/>
+        <param key="priority" value="LOW"/>
+    </flow>
+
+    <flow id="flow_ev_arterial" type="car_ev" route="route_arterial_east"
+          begin="90.00" end="1800.00" period="50.00">
+        <param key="type" value="passenger_ev"/>
+        <param key="priority" value="NORMAL"/>
+        <param key="battery_soc" value="85.0"/>
+    </flow>
+
+</routes>
