@@ -1,8 +1,4 @@
-Algorithm,TravelTime_sec,Distance_m,Congestion_index,PassengerDelay_sec,CO2_kg,Runtime_sec,Violations,ReroutedCount,FitnessScore
-Dijkstra,1353.09,1616.0,0.2004,106200.0,4.56,0.0755,22,0,5234.1193
-A*,127.3,1776.0,0.0,0.0,5.16,0.0837,0,0,46.0128
-GA,127.87,1776.0,0.0,0.0,5.16,1.4231,0,0,46.1856
-ACO,127.3,1776.0,0.0,0.0,5.16,1.3941,0,0,46.0128
-PSO,127.49,1776.0,0.0,0.0,5.16,1.0999,0,0,46.0704
-Standard QPSO,127.87,1776.0,0.0,0.0,5.16,1.1389,0,0,46.1856
-AT-DQPSO,129.22,1776.0,0.0,0.0,5.16,1.0129,0,0,46.5888
+algorithm,scenario,vehicles,seed,runtime_sec,avg_travel_time_sec,avg_distance_m,total_emissions_kg,avg_congestion,violations
+AT-DQPSO,accident_corridor,15,42,0.291,138.3,1773.33,3.771,0.2,0
+AT-DQPSO,accident_corridor,25,0.473,136.62,0.2,0,42,0.473,136.62,1738.8,6.412,0.2
+AT-DQPSO,accident_corridor,25,0.465,136.62,0.2,0,42,0.465,136.62,1738.8,6.412,0.2
